@@ -1,16 +1,81 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./ProfessionalContact.css";
+import { supabase } from "../lib/supabase";
 
 const ProfessionalContact = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [professional, setProfessional] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProfessional = async () => {
+      const { data, error } = await supabase
+        .from("professionals")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Supabase error:", error);
+        setError("Pwofesyonèl sa a pa jwenn.");
+      } else {
+        setProfessional(data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProfessional();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <main className="professional-contact">
+        <div className="contact-professional-container">
+          <div className="contact-professional-header">
+            <h1>Ap chaje...</h1>
+            <p>
+              Tanpri tann pandan n ap chèche enfòmasyon
+              pwofesyonèl la.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !professional) {
+    return (
+      <main className="professional-contact">
+        <div className="contact-professional-container">
+
+          <button
+            className="back-button"
+            onClick={() => navigate("/professionals")}
+          >
+            ←
+          </button>
+
+          <div className="contact-professional-header">
+            <h1>Pwofesyonèl sa a pa jwenn</h1>
+            <p>
+              Pwofil ou ap chèche a pa disponib.
+            </p>
+          </div>
+
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="professional-contact">
 
       <div className="contact-professional-container">
-
-        {/* BACK BUTTON */}
 
         <button
           className="back-button"
@@ -18,9 +83,6 @@ const ProfessionalContact = () => {
         >
           ←
         </button>
-
-
-        {/* PAGE HEADER */}
 
         <div className="contact-professional-header">
 
@@ -35,9 +97,6 @@ const ProfessionalContact = () => {
 
         </div>
 
-
-        {/* PROFESSIONAL CARD */}
-
         <div className="professional-contact-card">
 
           {/* PROFILE */}
@@ -46,13 +105,16 @@ const ProfessionalContact = () => {
 
             <div className="contact-profile-avatar">
 
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500"
-                alt="Jean Pierre"
-              />
+              {professional.image ? (
+                <img
+                  src={professional.image}
+                  alt={professional.name}
+                />
+              ) : (
+                <span>👤</span>
+              )}
 
             </div>
-
 
             <div className="contact-profile-info">
 
@@ -60,25 +122,24 @@ const ProfessionalContact = () => {
                 ● Disponib kounye a
               </span>
 
-              <h2>Jean Pierre</h2>
+              <h2>{professional.name}</h2>
 
               <p className="contact-profession">
-                Elektrisyen
+                {professional.profession}
               </p>
 
               <p className="contact-location">
-                📍 Delmas, Haïti
+                📍 {professional.location}
               </p>
 
               <div className="contact-rating">
                 ★★★★★
-                <span>4.9</span>
+                <span>{professional.rating}</span>
               </div>
 
             </div>
 
           </div>
-
 
           {/* CONTACT INFORMATION */}
 
@@ -91,80 +152,74 @@ const ProfessionalContact = () => {
             <div className="contact-info-grid">
 
               <div className="contact-info-item">
-
                 <span>👤</span>
 
                 <div>
                   <small>Non</small>
-                  <strong>Jean</strong>
+                  <strong>
+                    {professional.first_name || "—"}
+                  </strong>
                 </div>
-
               </div>
 
-
               <div className="contact-info-item">
-
                 <span>👤</span>
 
                 <div>
                   <small>Prenon</small>
-                  <strong>Pierre</strong>
+                  <strong>
+                    {professional.last_name || "—"}
+                  </strong>
                 </div>
-
               </div>
 
-
               <div className="contact-info-item">
-
                 <span>📞</span>
 
                 <div>
                   <small>Telefòn</small>
-                  <strong>+509 0000-0000</strong>
+                  <strong>
+                    {professional.phone || "—"}
+                  </strong>
                 </div>
-
               </div>
 
-
               <div className="contact-info-item">
-
                 <span>✉️</span>
 
                 <div>
                   <small>Email</small>
-                  <strong>jeanpierre@email.com</strong>
+                  <strong>
+                    {professional.email || "—"}
+                  </strong>
                 </div>
-
               </div>
 
-
               <div className="contact-info-item">
-
                 <span>💬</span>
 
                 <div>
                   <small>WhatsApp</small>
-                  <strong>+509 0000-0000</strong>
+                  <strong>
+                    {professional.whatsapp || "—"}
+                  </strong>
                 </div>
-
               </div>
 
-
               <div className="contact-info-item">
-
                 <span>📍</span>
 
                 <div>
                   <small>Zòn sèvis</small>
-                  <strong>Delmas, Haïti</strong>
+                  <strong>
+                    {professional.location || "—"}
+                  </strong>
                 </div>
-
               </div>
 
             </div>
 
           </div>
-
 
           {/* TRUST MESSAGE */}
 

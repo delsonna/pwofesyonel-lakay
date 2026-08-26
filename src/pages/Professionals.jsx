@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProfessionalCard from "../components/ProfessionalCard";
-import professionals from "../data/professionals";
+import { supabase } from "../lib/supabase";
 import "./Professionals.css";
 
 const Professionals = () => {
-
   const [searchParams] = useSearchParams();
 
   const selectedService = searchParams.get("service") || "";
@@ -15,18 +14,42 @@ const Professionals = () => {
   const [service, setService] = useState(selectedService);
   const [location, setLocation] = useState("");
 
-  const filteredProfessionals = professionals.filter((professional) => {
+  const [professionals, setProfessionals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Chaje pwofesyonèl yo soti nan Supabase
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      const { data, error } = await supabase
+        .from("professionals")
+        .select("*");
+
+      if (error) {
+        console.error("Supabase error:", error);
+        setError(error.message);
+      } else {
+        setProfessionals(data || []);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProfessionals();
+  }, []);
+
+  // Filtre pwofesyonèl yo
+  const filteredProfessionals = professionals.filter((professional) => {
     const matchesService =
       service.trim() === "" ||
       professional.profession
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(service.toLowerCase());
 
     const matchesLocation =
       location.trim() === "" ||
       professional.location
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(location.toLowerCase());
 
     return matchesService && matchesLocation;
@@ -130,8 +153,9 @@ const Professionals = () => {
                 </h2>
 
                 <p>
-                  {filteredProfessionals.length}{" "}
-                  pwofesyonèl jwenn
+                  {loading
+                    ? "Ap chaje..."
+                    : `${filteredProfessionals.length} pwofesyonèl jwenn`}
                 </p>
 
               </div>
@@ -163,7 +187,31 @@ const Professionals = () => {
             {/* CARDS */}
             <div className="professionals-page-grid">
 
-              {filteredProfessionals.length > 0 ? (
+              {loading ? (
+
+                <div className="no-professionals">
+
+                  <h3>
+                    Ap chaje pwofesyonèl yo...
+                  </h3>
+
+                </div>
+
+              ) : error ? (
+
+                <div className="no-professionals">
+
+                  <h3>
+                    Erè pandan nap chaje pwofesyonèl yo.
+                  </h3>
+
+                  <p>
+                    {error}
+                  </p>
+
+                </div>
+
+              ) : filteredProfessionals.length > 0 ? (
 
                 filteredProfessionals.map((professional) => (
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 import "./RegisterModal.css";
 
 const RegisterModal = ({
@@ -6,21 +7,166 @@ const RegisterModal = ({
   onClose,
   onSwitchToLogin,
 }) => {
+  const [accountCreated, setAccountCreated] =
+    useState(false);
 
-  const [accountCreated, setAccountCreated] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   if (!isOpen) {
     return null;
   }
 
-  const handleRegister = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setError("");
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    setAccountCreated(true);
+    console.log("REGISTER BUTTON CLICKED");
+
+    setError("");
+
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim()
+    ) {
+      setError(
+        "Tanpri ranpli prenon ak non ou."
+      );
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError(
+        "Tanpri antre email ou."
+      );
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      setError(
+        "Tanpri antre nimewo telefòn ou."
+      );
+      return;
+    }
+
+    if (
+      formData.password.length < 6
+    ) {
+      setError(
+        "Modpas la dwe gen omwen 6 karaktè."
+      );
+      return;
+    }
+
+    if (
+      formData.password !==
+      formData.confirmPassword
+    ) {
+      setError(
+        "Modpas yo pa menm."
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      /*
+      ================================
+      CREATE SUPABASE ACCOUNT
+      ================================
+      */
+
+      const {
+        data,
+        error: signUpError,
+      } = await supabase.auth.signUp({
+        email: formData.email.trim(),
+        password: formData.password,
+
+        options: {
+          data: {
+            first_name:
+              formData.firstName.trim(),
+
+            last_name:
+              formData.lastName.trim(),
+
+            phone:
+              formData.phone.trim(),
+          },
+        },
+      });
+
+      console.log(
+        "SUPABASE SIGNUP RESULT:",
+        data
+      );
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      /*
+      ================================
+      ACCOUNT CREATED
+      ================================
+      */
+
+      setAccountCreated(true);
+
+    } catch (error) {
+      console.error(
+        "REGISTER ERROR:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "Gen yon pwoblèm pandan kont lan t ap kreye."
+      );
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
     setAccountCreated(false);
+
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    setError("");
+
     onClose();
   };
 
@@ -32,25 +178,27 @@ const RegisterModal = ({
 
       <div
         className="register-modal"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) =>
+          e.stopPropagation()
+        }
       >
-
-        {/* CLOSE BUTTON */}
 
         <button
           className="register-modal-close"
+          type="button"
           onClick={handleClose}
-          aria-label="Fèmen"
         >
           ×
         </button>
 
 
-        {/* ================================
-            ACCOUNT CREATED
-        ================================= */}
-
         {accountCreated ? (
+
+          /*
+          ================================
+          SUCCESS
+          ================================
+          */
 
           <div className="account-success">
 
@@ -63,8 +211,10 @@ const RegisterModal = ({
             </h2>
 
             <p>
-              Mèsi paske ou chwazi Pwofesyonèl Lakay.
-              Kont ou pare avèk siksè.
+              Kont ou kreye avèk siksè.
+              Si Supabase mande verifikasyon
+              email, ale nan bwat resepsyon ou
+              pou konfime email la.
             </p>
 
             <button
@@ -79,9 +229,13 @@ const RegisterModal = ({
 
         ) : (
 
-          <>
+          /*
+          ================================
+          REGISTER FORM
+          ================================
+          */
 
-            {/* HEADER */}
+          <>
 
             <div className="register-modal-header">
 
@@ -94,66 +248,90 @@ const RegisterModal = ({
               </h2>
 
               <p>
-                Enskri sou Pwofesyonèl Lakay pou kòmanse.
+                Enskri sou Pwofesyonèl Lakay
+                pou kòmanse.
               </p>
 
             </div>
 
 
-            {/* FORM */}
+            {error && (
+              <div className="register-error">
+                {error}
+              </div>
+            )}
+
 
             <form
               className="register-form"
               onSubmit={handleRegister}
             >
 
-              {/* NAME */}
-
               <div className="register-form-group">
 
-                <label htmlFor="register-name">
-                  Non konplè
+                <label>
+                  Prenon
                 </label>
 
                 <input
-                  id="register-name"
+                  name="firstName"
                   type="text"
-                  placeholder="Antre non konplè ou"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="Egzanp: Jean"
                   required
                 />
 
               </div>
 
 
-              {/* EMAIL */}
+              <div className="register-form-group">
+
+                <label>
+                  Non
+                </label>
+
+                <input
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Egzanp: Pierre"
+                  required
+                />
+
+              </div>
+
 
               <div className="register-form-group">
 
-                <label htmlFor="register-email">
+                <label>
                   Email
                 </label>
 
                 <input
-                  id="register-email"
+                  name="email"
                   type="email"
-                  placeholder="Antre email ou"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Egzanp: jean@email.com"
                   required
                 />
 
               </div>
 
 
-              {/* PHONE */}
-
               <div className="register-form-group">
 
-                <label htmlFor="register-phone">
+                <label>
                   Telefòn
                 </label>
 
                 <input
-                  id="register-phone"
+                  name="phone"
                   type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
                   placeholder="+509..."
                   required
                 />
@@ -161,17 +339,17 @@ const RegisterModal = ({
               </div>
 
 
-              {/* PASSWORD */}
-
               <div className="register-form-group">
 
-                <label htmlFor="register-password">
+                <label>
                   Modpas
                 </label>
 
                 <input
-                  id="register-password"
+                  name="password"
                   type="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Kreye yon modpas"
                   required
                 />
@@ -179,25 +357,25 @@ const RegisterModal = ({
               </div>
 
 
-              {/* CONFIRM PASSWORD */}
-
               <div className="register-form-group">
 
-                <label htmlFor="register-confirm-password">
+                <label>
                   Konfime modpas
                 </label>
 
                 <input
-                  id="register-confirm-password"
+                  name="confirmPassword"
                   type="password"
+                  value={
+                    formData.confirmPassword
+                  }
+                  onChange={handleChange}
                   placeholder="Ekri modpas la ankò"
                   required
                 />
 
               </div>
 
-
-              {/* TERMS */}
 
               <label className="register-terms">
 
@@ -207,26 +385,26 @@ const RegisterModal = ({
                 />
 
                 <span>
-                  Mwen dakò ak kondisyon ak règleman
+                  Mwen dakò ak kondisyon
+                  ak règleman
                   Pwofesyonèl Lakay yo.
                 </span>
 
               </label>
 
 
-              {/* SUBMIT */}
-
               <button
                 type="submit"
                 className="register-submit"
+                disabled={loading}
               >
-                Kreye kont
+                {loading
+                  ? "Kreyasyon kont..."
+                  : "Kreye kont"}
               </button>
 
             </form>
 
-
-            {/* LOGIN */}
 
             <div className="register-login">
 

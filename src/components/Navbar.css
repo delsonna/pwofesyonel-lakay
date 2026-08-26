@@ -330,3 +330,277 @@
     cursor: pointer;
   }
 }
+
+
+
+
+
+/* ================================
+   USER MENU
+================================ */
+
+.user-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+/* USER AVATAR BUTTON */
+
+.user-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: transparent;
+  border: none;
+
+  cursor: pointer;
+  padding: 4px 6px;
+
+  font-family: inherit;
+}
+
+
+/* ROUND AVATAR */
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #6f4e37;
+  color: #fff;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+
+  transition: all 0.2s ease;
+}
+
+
+/* AVATAR HOVER */
+
+.user-avatar-btn:hover .user-avatar {
+  transform: scale(1.05);
+  background: #5b3f2d;
+}
+
+
+/* ARROW */
+
+.user-arrow {
+  font-size: 9px;
+  color: #6f4e37;
+}
+
+
+/* ================================
+   USER DROPDOWN
+================================ */
+
+.user-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+
+  /* DEPLACE LE DROPDOWN PLIS ADWAT */
+  right: -100px;
+
+  width: 250px;
+
+  background: #fffaf4;
+
+  border: 1px solid #e6d8ca;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 35px rgba(63, 43, 29, 0.15);
+
+  padding: 10px;
+
+  z-index: 1000;
+
+  animation: userDropdownAnimation 0.18s ease;
+}
+
+
+@keyframes userDropdownAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ================================
+   DROPDOWN HEADER
+================================ */
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px 8px 12px;
+}
+
+
+/* DROPDOWN AVATAR */
+
+.user-dropdown-avatar {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #6f4e37;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* NAME + STATUS */
+
+.user-dropdown-header div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  min-width: 0;
+}
+
+
+.user-dropdown-header strong {
+  color: #3f2b1d;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.user-dropdown-header span {
+  color: #4f8a57;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* ================================
+   DIVIDER
+================================ */
+
+.user-dropdown-divider {
+  height: 1px;
+
+  background: #eadfd5;
+
+  margin: 5px 4px;
+}
+
+
+/* ================================
+   DROPDOWN ITEMS
+================================ */
+
+.user-dropdown-item,
+.user-dropdown-professional,
+.user-dropdown-logout {
+  width: 100%;
+
+  border: none;
+  background: transparent;
+
+  text-align: left;
+
+  padding: 11px 10px;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  display: block;
+
+  text-decoration: none;
+
+  box-sizing: border-box;
+}
+
+
+/* MON PROFIL + PARAMETRES */
+
+.user-dropdown-item {
+  color: #4a3628;
+}
+
+
+.user-dropdown-item:hover {
+  background: #f1e6da;
+}
+
+
+/* ================================
+   ENSKRI KOM PWOFESYONEL
+================================ */
+
+.user-dropdown-professional {
+  color: #6f4e37;
+
+  font-weight: 700;
+
+  margin-top: 3px;
+}
+
+
+.user-dropdown-professional:hover {
+  background: #f1e6da;
+
+  color: #4f3524;
+}
+
+
+/* ================================
+   LOGOUT
+================================ */
+
+.user-dropdown-logout {
+  color: #b44a3c;
+
+  font-weight: 600;
+}
+
+
+.user-dropdown-logout:hover {
+  background: #f8e7e3;
+}

@@ -1,20 +1,129 @@
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
 import "./LoginModal.css";
-const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
+
+const LoginModal = ({
+  isOpen,
+  onClose,
+  onSwitchToRegister,
+  onLoginSuccess,
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   if (!isOpen) {
     return null;
   }
 
-  return (
-    <div className="login-modal-overlay" onClick={onClose}>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    setError("");
+    setLoading(true);
+
+    try {
+      /*
+      ================================
+      LOGIN SUPABASE
+      ================================
+      */
+
+      const {
+        data,
+        error: loginError,
+      } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (loginError) {
+        throw loginError;
+      }
+
+      /*
+      ================================
+      VERIFY SESSION
+      ================================
+      */
+
+      if (!data?.session || !data?.user) {
+        throw new Error(
+          "Sesyon ou a pa disponib. Tanpri konekte ankò."
+        );
+      }
+
+      /*
+      ================================
+      USER INFORMATION
+      ================================
+      */
+
+      const user = data.user;
+
+      const firstName =
+        user.user_metadata?.first_name || "";
+
+      const lastName =
+        user.user_metadata?.last_name || "";
+
+      const loggedUser = {
+        id: user.id,
+        firstName,
+        lastName,
+        email: user.email,
+      };
+
+      /*
+      ================================
+      SEND USER TO APP
+      ================================
+      */
+
+      if (onLoginSuccess) {
+        onLoginSuccess(loggedUser);
+      }
+
+      /*
+      ================================
+      CLEAN FORM
+      ================================
+      */
+
+      setEmail("");
+      setPassword("");
+      setError("");
+
+      onClose();
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      setError(
+        error.message ||
+          "Email oswa modpas la pa kòrèk."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="login-modal-overlay"
+      onClick={onClose}
+    >
       <div
         className="login-modal"
         onClick={(e) => e.stopPropagation()}
       >
 
-        {/* CLOSE BUTTON */}
+        {/* CLOSE */}
+
         <button
           className="login-modal-close"
+          type="button"
           onClick={onClose}
           aria-label="Fèmen"
         >
@@ -23,6 +132,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
 
         {/* HEADER */}
+
         <div className="login-modal-header">
 
           <div className="login-modal-logo">
@@ -40,8 +150,23 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
         </div>
 
 
+        {/* ERROR */}
+
+        {error && (
+          <div className="login-error">
+            {error}
+          </div>
+        )}
+
+
         {/* FORM */}
-        <form className="login-form">
+
+        <form
+          className="login-form"
+          onSubmit={handleSubmit}
+        >
+
+          {/* EMAIL */}
 
           <div className="login-form-group">
 
@@ -53,10 +178,17 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               id="login-email"
               type="email"
               placeholder="Antre email ou"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              required
             />
 
           </div>
 
+
+          {/* PASSWORD */}
 
           <div className="login-form-group">
 
@@ -68,10 +200,17 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               id="login-password"
               type="password"
               placeholder="Antre modpas ou"
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+              required
             />
 
           </div>
 
+
+          {/* OPTIONS */}
 
           <div className="login-form-options">
 
@@ -85,7 +224,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
             </label>
 
-
             <button
               type="button"
               className="forgot-password"
@@ -96,17 +234,23 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           </div>
 
 
+          {/* LOGIN BUTTON */}
+
           <button
             type="submit"
             className="login-submit"
+            disabled={loading}
           >
-            Konekte
+            {loading
+              ? "Koneksyon..."
+              : "Konekte"}
           </button>
 
         </form>
 
 
-        {/* REGISTER LINK */}
+        {/* REGISTER */}
+
         <div className="login-register">
 
           <span>
@@ -123,10 +267,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
         </div>
 
       </div>
-
     </div>
   );
 };
 
 export default LoginModal;
-

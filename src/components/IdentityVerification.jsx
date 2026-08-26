@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import "./IdentityVerification.css";
 
-const IdentityVerification = () => {
+const IdentityVerification = ({
+  onDocumentCaptured,
+  onFaceCaptured,
+}) => {
   // =========================================
   // DOCUMENT SCANNER
   // =========================================
@@ -95,9 +98,30 @@ const IdentityVerification = () => {
       canvas.height
     );
 
-    const photo = canvas.toDataURL("image/jpeg", 0.9);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          return;
+        }
 
-    setDocumentPhoto(photo);
+        const file = new File(
+          [blob],
+          `identity-document-${Date.now()}.jpg`,
+          {
+            type: "image/jpeg",
+          }
+        );
+
+        setDocumentPhoto(URL.createObjectURL(blob));
+
+        // Voye foto a bay ProfessionalSetup
+        if (onDocumentCaptured) {
+          onDocumentCaptured(file);
+        }
+      },
+      "image/jpeg",
+      0.9
+    );
 
     closeDocumentCamera();
   };
@@ -108,6 +132,11 @@ const IdentityVerification = () => {
 
   const retakeDocument = () => {
     setDocumentPhoto(null);
+
+    if (onDocumentCaptured) {
+      onDocumentCaptured(null);
+    }
+
     openDocumentCamera();
   };
 
@@ -184,9 +213,30 @@ const IdentityVerification = () => {
       canvas.height
     );
 
-    const photo = canvas.toDataURL("image/jpeg", 0.9);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          return;
+        }
 
-    setFacePhoto(photo);
+        const file = new File(
+          [blob],
+          `face-verification-${Date.now()}.jpg`,
+          {
+            type: "image/jpeg",
+          }
+        );
+
+        setFacePhoto(URL.createObjectURL(blob));
+
+        // Voye foto vizaj la bay ProfessionalSetup
+        if (onFaceCaptured) {
+          onFaceCaptured(file);
+        }
+      },
+      "image/jpeg",
+      0.9
+    );
 
     closeFaceCamera();
   };
@@ -197,6 +247,11 @@ const IdentityVerification = () => {
 
   const retakeFace = () => {
     setFacePhoto(null);
+
+    if (onFaceCaptured) {
+      onFaceCaptured(null);
+    }
+
     openFaceCamera();
   };
 
@@ -219,6 +274,10 @@ const IdentityVerification = () => {
       }
     };
   }, []);
+
+  // =========================================
+  // RETURN
+  // =========================================
 
   return (
     <div className="identity-verification">

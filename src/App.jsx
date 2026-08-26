@@ -10,28 +10,39 @@ import ProfessionalProfile from "./pages/ProfessionalProfile";
 import ProfessionalContact from "./pages/ProfessionalContact";
 import ProfessionalSetup from "./pages/ProfessionalSetup";
 import IdentityVerification from "./components/IdentityVerification";
+
+import DatabaseTest from "./pages/DatabaseTest";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Home />} />
+        {/* HOME */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
+        {/* PROFESSIONALS */}
         <Route
           path="/professionals"
           element={<Professionals />}
         />
 
+        {/* CATEGORIES */}
         <Route
           path="/categories"
           element={<Categories />}
         />
 
+        {/* ABOUT */}
         <Route
           path="/about"
           element={<About />}
         />
 
+        {/* CONTACT */}
         <Route
           path="/contact"
           element={<Contact />}
@@ -48,22 +59,25 @@ function App() {
           path="/professional/:id/contact"
           element={<ProfessionalContact />}
         />
-<Route
-  path="/professional-setup"
-  element={<ProfessionalSetup />}
-/>
 
-<Route
-  path="/identity-verification"
-  element={<IdentityVerification />}
+        {/* PROFESSIONAL SETUP */}
+        <Route
+          path="/professional-setup"
+          element={<ProfessionalSetup />}
+        />
 
-/>
+        {/* IDENTITY VERIFICATION */}
+        <Route
+          path="/identity-verification"
+          element={<IdentityVerification />}
+        />
 
+        {/* SUPABASE DATABASE TEST */}
+        <Route
+          path="/database-test"
+          element={<DatabaseTest />}
+        />
 
-<Route
-  path="/professional-setup"
-  element={<ProfessionalSetup />}
-/>
       </Routes>
     </BrowserRouter>
   );

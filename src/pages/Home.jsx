@@ -3,10 +3,14 @@ import Navbar from "../components/Navbar";
 import ProfessionalCard from "../components/ProfessionalCard";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import professionals from "../data/professionals";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const [professionals, setProfessionals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Kategori popilè yo
   const categories = [
@@ -42,14 +46,40 @@ const Home = () => {
     },
   ];
 
+  // Chaje pwofesyonèl yo soti Supabase
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      const { data, error } = await supabase
+        .from("professionals")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("Supabase error:", error);
+      } else {
+        setProfessionals(data || []);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProfessionals();
+  }, []);
+
   // Konte konbyen pwofesyonèl ki genyen nan chak kategori
   const getProfessionalCount = (service) => {
     return professionals.filter(
       (professional) =>
-        professional.profession.toLowerCase() ===
+        professional.profession?.toLowerCase() ===
         service.toLowerCase()
     ).length;
   };
+
+  // Premye pwofesyonèl pou Hero
+  const heroProfessional = professionals[0];
+
+  // 3 pwofesyonèl rekòmande
+  const recommendedProfessionals = professionals.slice(0, 3);
 
   return (
     <>
@@ -91,11 +121,11 @@ const Home = () => {
                 </button>
 
                 <button
-                  className="secondary-btn"
-                  onClick={() => navigate("/professional-setup")}
-                >
-                  Enskri kòm pwofesyonèl
-                </button>
+  className="secondary-btn"
+  onClick={() => navigate("/about")}
+>
+  Sou nou
+</button>
 
               </div>
 
@@ -112,35 +142,76 @@ const Home = () => {
                   Disponib kounye a
                 </div>
 
-                <div className="professional-avatar">
-                  👨🏾‍🔧
-                </div>
+                {loading ? (
 
-                <h3>
-                  Jean Pierre
-                </h3>
+                  <div className="professional-avatar">
+                    👨🏾‍🔧
+                  </div>
 
-                <p>
-                  Elektrisyen
-                </p>
+                ) : heroProfessional ? (
 
-                <div className="rating">
-                  ★★★★★
-                  <span>4.9</span>
-                </div>
+                  <>
+                    <div className="professional-avatar">
 
-                <div className="location">
-                  📍 Delmas, Haïti
-                </div>
+                      {heroProfessional.image ? (
+                        <img
+                          src={heroProfessional.image}
+                          alt={heroProfessional.name}
+                        />
+                      ) : (
+                        "👨🏾‍🔧"
+                      )}
 
-                <button
-                  className="profile-btn"
-                  onClick={() =>
-                    navigate("/professional/jean-pierre")
-                  }
-                >
-                  Gade pwofil
-                </button>
+                    </div>
+
+                    <h3>
+                      {heroProfessional.name}
+                    </h3>
+
+                    <p>
+                      {heroProfessional.profession}
+                    </p>
+
+                    <div className="rating">
+                      ★★★★★
+                      <span>
+                        {heroProfessional.rating}
+                      </span>
+                    </div>
+
+                    <div className="location">
+                      📍 {heroProfessional.location}
+                    </div>
+
+                    <button
+                      className="profile-btn"
+                      onClick={() =>
+                        navigate(
+                          `/professional/${heroProfessional.id}`
+                        )
+                      }
+                    >
+                      Gade pwofil
+                    </button>
+                  </>
+
+                ) : (
+
+                  <>
+                    <div className="professional-avatar">
+                      👨🏾‍🔧
+                    </div>
+
+                    <h3>
+                      Pwofesyonèl Lakay
+                    </h3>
+
+                    <p>
+                      Pwofesyonèl disponib
+                    </p>
+                  </>
+
+                )}
 
               </div>
 
@@ -299,10 +370,7 @@ const Home = () => {
 
 
                     <p className="category-count">
-                      {count}{" "}
-                      {count === 1
-                        ? "pwofesyonèl"
-                        : "pwofesyonèl"}
+                      {count} pwofesyonèl
                     </p>
 
 
@@ -366,34 +434,35 @@ const Home = () => {
 
             <div className="professionals-grid">
 
-              <ProfessionalCard
-                id="jean-pierre"
-                name="Jean Pierre"
-                profession="Elektrisyen"
-                location="Delmas"
-                rating="4.9"
-                image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500"
-              />
+              {loading ? (
 
+                <p>
+                  Ap chaje pwofesyonèl yo...
+                </p>
 
-              <ProfessionalCard
-                id="marie-louis"
-                name="Marie Louis"
-                profession="Plonbye"
-                location="Pétion-Ville"
-                rating="4.8"
-                image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500"
-              />
+              ) : recommendedProfessionals.length > 0 ? (
 
+                recommendedProfessionals.map((professional) => (
 
-              <ProfessionalCard
-                id="paul-joseph"
-                name="Paul Joseph"
-                profession="Mekanisyen"
-                location="Carrefour"
-                rating="4.9"
-                image="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500"
-              />
+                  <ProfessionalCard
+                    key={professional.id}
+                    id={professional.id}
+                    name={professional.name}
+                    profession={professional.profession}
+                    location={professional.location}
+                    rating={professional.rating}
+                    image={professional.image}
+                  />
+
+                ))
+
+              ) : (
+
+                <p>
+                  Pa gen pwofesyonèl disponib pou kounye a.
+                </p>
+
+              )}
 
             </div>
 
