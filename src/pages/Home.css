@@ -331,3 +331,47 @@
   object-fit: cover;
   display: block;
 }
+
+/* =========================================
+   HERO TEXT - DESKRIPSYON
+========================================= */
+
+.hero-content .hero-description {
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   HERO TEXT - GID POU ITILIZATÈ
+========================================= */
+
+.hero-content .hero-guide {
+  margin-top: 0;
+  margin-bottom: 26px;
+  max-width: 620px;
+  color: #6f5a4a;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.hero-content .hero-guide strong {
+  color: #5c3b28;
+  font-weight: 700;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .hero-content .hero-description,
+  .hero-content .hero-guide {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .hero-content .hero-guide {
+    margin-bottom: 22px;
+  }
+}

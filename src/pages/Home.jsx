@@ -1,3 +1,4 @@
+
 import "./Home.css";
 import Navbar from "../components/Navbar";
 import ProfessionalCard from "../components/ProfessionalCard";
@@ -12,7 +13,26 @@ const Home = () => {
   const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Kategori popilè yo
+  // Pwofesyonèl ki ap parèt nan Hero card la
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  // Efè fade lè pwofesyonèl la chanje
+  const [heroChanging, setHeroChanging] = useState(false);
+
+  // =====================================================
+  // NORMALIZE NON PWOFESYON / SÈVIS
+  // =====================================================
+  const normalizeService = (value) => {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
+  // =====================================================
+  // KATEGORI POPILÈ YO
+  // =====================================================
   const categories = [
     {
       icon: "🔧",
@@ -46,8 +66,12 @@ const Home = () => {
     },
   ];
 
-  // Chaje pwofesyonèl yo soti Supabase
+  // =====================================================
+  // CHAJE PWOFESYONÈL YO SOTI SUPABASE
+  // =====================================================
   useEffect(() => {
+    let mounted = true;
+
     const fetchProfessionals = async () => {
       const { data, error } = await supabase
         .from("professionals")
@@ -56,29 +80,109 @@ const Home = () => {
 
       if (error) {
         console.error("Supabase error:", error);
-      } else {
-        setProfessionals(data || []);
+
+        if (mounted) {
+          setProfessionals([]);
+          setLoading(false);
+        }
+
+        return;
       }
 
-      setLoading(false);
+      if (mounted) {
+        const professionalList = data || [];
+
+        setProfessionals(professionalList);
+        setLoading(false);
+
+        // Si nouvo lis la pi kout pase index aktyèl la,
+        // nou retounen sou premye pwofesyonèl la.
+        setHeroIndex((currentIndex) => {
+          if (professionalList.length === 0) {
+            return 0;
+          }
+
+          return currentIndex >= professionalList.length
+            ? 0
+            : currentIndex;
+        });
+      }
     };
 
+    // Premye chajman
     fetchProfessionals();
+
+    // ===================================================
+    // SUPABASE REALTIME
+    // ===================================================
+    const channel = supabase
+      .channel("home-professionals")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "professionals",
+        },
+        () => {
+          fetchProfessionals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  // Konte konbyen pwofesyonèl ki genyen nan chak kategori
+  // =====================================================
+  // CHANJE HERO PROFESSIONAL CHAK 6 SEGOND
+  // =====================================================
+  useEffect(() => {
+    if (professionals.length <= 1) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      // Kòmanse fade
+      setHeroChanging(true);
+
+      // Apre ti moman fade la, chanje pwofesyonèl la
+      setTimeout(() => {
+        setHeroIndex((currentIndex) => {
+          return (currentIndex + 1) % professionals.length;
+        });
+
+        setHeroChanging(false);
+      }, 350);
+    }, 6000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [professionals.length]);
+
+  // =====================================================
+  // KONTE PWOFESYONÈL PA KATEGORI
+  // =====================================================
   const getProfessionalCount = (service) => {
+    const normalizedService = normalizeService(service);
+
     return professionals.filter(
       (professional) =>
-        professional.profession?.toLowerCase() ===
-        service.toLowerCase()
+        normalizeService(professional.profession) === normalizedService
     ).length;
   };
 
-  // Premye pwofesyonèl pou Hero
-  const heroProfessional = professionals[0];
+  // =====================================================
+  // PROFESSIONAL POU HERO
+  // =====================================================
+  const heroProfessional = professionals[heroIndex];
 
-  // 3 pwofesyonèl rekòmande
+  // =====================================================
+  // 3 PWOFESYONÈL REKÒMANDE
+  // =====================================================
   const recommendedProfessionals = professionals.slice(0, 3);
 
   return (
@@ -87,7 +191,9 @@ const Home = () => {
 
       <main className="home">
 
-        {/* HERO SECTION */}
+        {/* =====================================================
+            HERO SECTION
+        ===================================================== */}
         <section className="hero">
 
           <div className="hero-container">
@@ -105,11 +211,25 @@ const Home = () => {
                 toupre lakay ou.
               </h1>
 
-              <p>
-                Pwofesyonèl Lakay konekte w ak teknisyen ak pwofesyonèl
-                serye nan zòn ou an. Chèche sèvis ou bezwen an fasil,
-                rapid epi san tèt chaje.
-              </p>
+              
+<p className="hero-description">
+  Pwofesyonèl Lakay konekte w ak teknisyen ak pwofesyonèl
+  serye nan zòn ou an. Chèche sèvis ou bezwen an fasil,
+  rapid epi san tèt chaje.
+</p>
+
+<p className="hero-guide">
+  Anvan ou kontakte yon pwofesyonèl, ou ka ale nan seksyon
+  Kategori a pou dekouvri tout sèvis ki disponib sou
+  platfòm lan. Chwazi kategori ki enterese w la, gade
+  pwofesyonèl ki disponib yo, epi vizite pwofil yo pou
+  jwenn plis enfòmasyon sou sèvis yo. Si ou se yon
+  pwofesyonèl epi ou vle ofri sèvis ou sou Pwofesyonèl
+  Lakay, ale sou pwofil ou epi chwazi bouton
+  <strong> Enskri kòm pwofesyonèl</strong>. Apre sa,
+  swiv etap yo pou ranpli enfòmasyon ou yo epi mete
+  pwofil ou disponib sou platfòm lan.
+</p>
 
               <div className="hero-buttons">
 
@@ -121,21 +241,26 @@ const Home = () => {
                 </button>
 
                 <button
-  className="secondary-btn"
-  onClick={() => navigate("/about")}
->
-  Sou nou
-</button>
+                  className="secondary-btn"
+                  onClick={() => navigate("/about")}
+                >
+                  Sou nou
+                </button>
 
               </div>
 
             </div>
 
-
-            {/* HERO PROFESSIONAL CARD */}
+            {/* =====================================================
+                HERO PROFESSIONAL CARD
+            ===================================================== */}
             <div className="hero-visual">
 
-              <div className="hero-card">
+              <div
+                className={`hero-card ${
+                  heroChanging ? "hero-card-changing" : ""
+                }`}
+              >
 
                 <div className="hero-card-top">
                   <span className="status-dot"></span>
@@ -150,7 +275,8 @@ const Home = () => {
 
                 ) : heroProfessional ? (
 
-                  <>
+                  <div className="hero-professional-content">
+
                     <div className="professional-avatar">
 
                       {heroProfessional.image ? (
@@ -175,7 +301,7 @@ const Home = () => {
                     <div className="rating">
                       ★★★★★
                       <span>
-                        {heroProfessional.rating}
+                        {heroProfessional.rating ?? 0}
                       </span>
                     </div>
 
@@ -193,11 +319,13 @@ const Home = () => {
                     >
                       Gade pwofil
                     </button>
-                  </>
+
+                  </div>
 
                 ) : (
 
                   <>
+
                     <div className="professional-avatar">
                       👨🏾‍🔧
                     </div>
@@ -209,6 +337,7 @@ const Home = () => {
                     <p>
                       Pwofesyonèl disponib
                     </p>
+
                   </>
 
                 )}
@@ -222,7 +351,9 @@ const Home = () => {
         </section>
 
 
-        {/* SEARCH SECTION */}
+        {/* =====================================================
+            SEARCH SECTION
+        ===================================================== */}
         <section className="search-section">
 
           <div className="search-container">
@@ -243,7 +374,6 @@ const Home = () => {
               </p>
 
             </div>
-
 
             <div className="search-box">
 
@@ -268,9 +398,7 @@ const Home = () => {
 
               </div>
 
-
               <div className="search-divider"></div>
-
 
               <div className="search-field">
 
@@ -293,7 +421,6 @@ const Home = () => {
 
               </div>
 
-
               <button
                 className="search-btn"
                 onClick={() => navigate("/professionals")}
@@ -308,7 +435,9 @@ const Home = () => {
         </section>
 
 
-        {/* CATEGORIES SECTION */}
+        {/* =====================================================
+            CATEGORIES SECTION
+        ===================================================== */}
         <section className="categories-section">
 
           <div className="section-container">
@@ -327,7 +456,6 @@ const Home = () => {
 
               </div>
 
-
               <button
                 className="view-all-btn"
                 onClick={() => navigate("/categories")}
@@ -336,7 +464,6 @@ const Home = () => {
               </button>
 
             </div>
-
 
             <div className="categories-grid">
 
@@ -363,16 +490,15 @@ const Home = () => {
                       {category.icon}
                     </div>
 
-
                     <h3>
                       {category.name}
                     </h3>
 
-
                     <p className="category-count">
-                      {count} pwofesyonèl
+                      {loading
+                        ? "..."
+                        : `${count} pwofesyonèl`}
                     </p>
-
 
                     <button
                       type="button"
@@ -402,7 +528,9 @@ const Home = () => {
         </section>
 
 
-        {/* PROFESSIONALS SECTION */}
+        {/* =====================================================
+            PROFESSIONALS SECTION
+        ===================================================== */}
         <section className="professionals-section">
 
           <div className="section-container">
@@ -421,7 +549,6 @@ const Home = () => {
 
               </div>
 
-
               <button
                 className="view-all-btn"
                 onClick={() => navigate("/professionals")}
@@ -430,7 +557,6 @@ const Home = () => {
               </button>
 
             </div>
-
 
             <div className="professionals-grid">
 
@@ -471,7 +597,9 @@ const Home = () => {
         </section>
 
 
-        {/* HOW IT WORKS */}
+        {/* =====================================================
+            HOW IT WORKS
+        ===================================================== */}
         <section className="how-section">
 
           <div className="section-container">
@@ -493,7 +621,6 @@ const Home = () => {
 
             </div>
 
-
             <div className="steps">
 
               <div className="step">
@@ -513,7 +640,6 @@ const Home = () => {
 
               </div>
 
-
               <div className="step">
 
                 <div className="step-number">
@@ -530,7 +656,6 @@ const Home = () => {
                 </p>
 
               </div>
-
 
               <div className="step">
 
@@ -556,7 +681,6 @@ const Home = () => {
         </section>
 
       </main>
-
 
       <Footer />
     </>

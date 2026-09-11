@@ -444,3 +444,40 @@
     font-size: 17px;
   }
 }
+
+
+
+
+.profile-avatar {
+  position: relative;
+}
+
+.change-profile-photo-btn {
+  display: block;
+  margin-top: 12px;
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #6f4e37;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.change-profile-photo-btn:hover {
+  background: #543a28;
+}
+
+.change-profile-photo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.own-profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
+}

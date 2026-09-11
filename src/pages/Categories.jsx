@@ -1,9 +1,20 @@
 
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Categories.css";
+import { supabase } from "../lib/supabase";
 
 const Categories = () => {
+  const [professionals, setProfessionals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  /*
+  ==========================================================
+  KATEGORI YO
+  ==========================================================
+  */
+
   const categories = [
     {
       icon: "🏠",
@@ -147,6 +158,128 @@ const Categories = () => {
     },
   ];
 
+  /*
+  ==========================================================
+  NORMALIZE NON SÈVIS YO
+  ==========================================================
+  */
+
+  const normalizeService = (value) => {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
+  /*
+  ==========================================================
+  CHAJE PWOFESYONÈL YO
+  ==========================================================
+  */
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchProfessionals = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("professionals")
+          .select("id, profession");
+
+        if (error) {
+          throw error;
+        }
+
+        if (mounted) {
+          setProfessionals(data || []);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement des professionnels:",
+          error
+        );
+
+        if (mounted) {
+          setProfessionals([]);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProfessionals();
+
+    /*
+    ========================================================
+    SUPABASE REALTIME
+    ========================================================
+    */
+
+    const channel = supabase
+      .channel("categories-professionals-count")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "professionals",
+        },
+        () => {
+          fetchProfessionals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  /*
+  ==========================================================
+  KONTE PWOFESYONÈL POU YON SÈVIS
+  ==========================================================
+  */
+
+  const getProfessionalCount = (service) => {
+    const normalizedService = normalizeService(service);
+
+    return professionals.filter((professional) => {
+      return (
+        normalizeService(professional.profession) ===
+        normalizedService
+      );
+    }).length;
+  };
+
+  /*
+  ==========================================================
+  KONTE TOTAL PWOFESYONÈL NAN YON GWO KATEGORI
+  ==========================================================
+  */
+
+  const getCategoryTotal = (services) => {
+    const serviceNames = new Set(
+      services.map((service) => normalizeService(service))
+    );
+
+    return professionals.filter((professional) =>
+      serviceNames.has(
+        normalizeService(professional.profession)
+      )
+    ).length;
+  };
+
+  /*
+  ==========================================================
+  RENDER
+  ==========================================================
+  */
+
   return (
     <>
       <Navbar />
@@ -198,40 +331,71 @@ const Categories = () => {
 
             <div className="categories-grid">
 
-              {categories.map((category) => (
-                <div
-                  className="category-large-card"
-                  key={category.title}
-                >
+              {categories.map((category) => {
 
-                  <div className="category-card-icon">
-                    {category.icon}
-                  </div>
+                const categoryTotal =
+                  getCategoryTotal(category.services);
 
-                  <div className="category-card-content">
+                return (
+                  <div
+                    className="category-large-card"
+                    key={category.title}
+                  >
 
-                    <h3>
-                      {category.title}
-                    </h3>
+                    <div className="category-card-icon">
+                      {category.icon}
+                    </div>
 
-                    <p>
-                      {category.services.length} sèvis disponib
-                    </p>
 
-                    <div className="services-list">
+                    <div className="category-card-content">
 
-                      {category.services.map((service) => (
-                        <span key={service}>
-                          {service}
-                        </span>
-                      ))}
+                      <h3>
+                        {category.title}
+                      </h3>
+
+
+                      <p>
+                        {category.services.length} sèvis disponib
+                        {" · "}
+                        {loading
+                          ? "..."
+                          : `${categoryTotal} pwofesyonèl`}
+                      </p>
+
+
+                      <div className="services-list">
+
+                        {category.services.map((service) => {
+
+                          const count =
+                            getProfessionalCount(service);
+
+                          return (
+                            <span
+                              key={service}
+                              title={`${count} pwofesyonèl`}
+                            >
+                              {service}
+
+                              <strong
+                                style={{
+                                  marginLeft: "6px",
+                                  fontWeight: "600",
+                                }}
+                              >
+                                ({loading ? "..." : count})
+                              </strong>
+                            </span>
+                          );
+                        })}
+
+                      </div>
 
                     </div>
 
                   </div>
-
-                </div>
-              ))}
+                );
+              })}
 
             </div>
 
@@ -247,4 +411,3 @@ const Categories = () => {
 };
 
 export default Categories;
-

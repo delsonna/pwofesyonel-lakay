@@ -1,19 +1,113 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
+import { supabase } from "../lib/supabase";
 
 const Navbar = ({ onRegisterClick }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // USER CONNECTE
   const [user, setUser] = useState(null);
-
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  /*
+  ==========================================================
+  RESTORE SUPABASE SESSION
+  ==========================================================
+  */
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSession = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("Get session error:", error);
+          return;
+        }
+
+        if (!mounted) return;
+
+        if (session?.user) {
+          const supabaseUser = session.user;
+
+          const firstName =
+            supabaseUser.user_metadata?.first_name || "";
+
+          const lastName =
+            supabaseUser.user_metadata?.last_name || "";
+
+          setUser({
+            id: supabaseUser.id,
+            firstName,
+            lastName,
+            email: supabaseUser.email || "",
+          });
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Session restore error:", error);
+      }
+    };
+
+    loadSession();
+
+    /*
+    ==========================================================
+    LISTEN FOR AUTH CHANGES
+    ==========================================================
+    */
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
+
+        if (session?.user) {
+          const supabaseUser = session.user;
+
+          const firstName =
+            supabaseUser.user_metadata?.first_name || "";
+
+          const lastName =
+            supabaseUser.user_metadata?.last_name || "";
+
+          setUser({
+            id: supabaseUser.id,
+            firstName,
+            lastName,
+            email: supabaseUser.email || "",
+          });
+        } else {
+          setUser(null);
+          setUserMenuOpen(false);
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  /*
+  ==========================================================
+  OPEN LOGIN
+  ==========================================================
+  */
 
   const openLogin = () => {
     setShowRegister(false);
@@ -21,6 +115,12 @@ const Navbar = ({ onRegisterClick }) => {
     setMenuOpen(false);
     setUserMenuOpen(false);
   };
+
+  /*
+  ==========================================================
+  OPEN REGISTER
+  ==========================================================
+  */
 
   const openRegister = () => {
     setShowLogin(false);
@@ -33,6 +133,12 @@ const Navbar = ({ onRegisterClick }) => {
     }
   };
 
+  /*
+  ==========================================================
+  CLOSE REGISTER
+  ==========================================================
+  */
+
   const closeRegister = () => {
     setShowRegister(false);
 
@@ -41,36 +147,81 @@ const Navbar = ({ onRegisterClick }) => {
     }
   };
 
-  // Lè LoginModal voye enfòmasyon itilizatè a
+  /*
+  ==========================================================
+  LOGIN SUCCESS
+  ==========================================================
+  */
+
   const handleLoginSuccess = (loggedInUser) => {
     setUser(loggedInUser);
     setUserMenuOpen(false);
-  };
-
-  // DEKONEKTE
-  const handleLogout = () => {
-    setUser(null);
-    setUserMenuOpen(false);
-  };
-
-  const closeMenu = () => {
     setMenuOpen(false);
   };
 
-  // 2 premye lèt non + prenon
+  /*
+  ==========================================================
+  LOGOUT
+  ==========================================================
+  */
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+
+      setUser(null);
+      setUserMenuOpen(false);
+      setMenuOpen(false);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  /*
+  ==========================================================
+  CLOSE MENUS
+  ==========================================================
+  */
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+  };
+
+  /*
+  ==========================================================
+  USER INITIALS
+  ==========================================================
+  */
+
   const getInitials = () => {
     if (!user) return "";
 
     const first = user.firstName?.charAt(0) || "";
     const last = user.lastName?.charAt(0) || "";
 
-    return `${first}${last}`.toUpperCase();
+    const initials = `${first}${last}`.toUpperCase();
+
+    if (initials) {
+      return initials;
+    }
+
+    return user.email?.charAt(0)?.toUpperCase() || "U";
   };
+
+  /*
+  ==========================================================
+  RENDER
+  ==========================================================
+  */
 
   return (
     <>
       <header className="navbar">
-
         <div className="navbar-container">
 
           {/* LOGO */}
@@ -179,26 +330,41 @@ const Navbar = ({ onRegisterClick }) => {
                     <div className="user-dropdown-divider" />
 
 
-                    <button className="user-dropdown-item">
+                    <Link
+                      to="/profile"
+                      className="user-dropdown-item"
+                      onClick={() =>
+                        setUserMenuOpen(false)
+                      }
+                    >
                       Mon profil
-                    </button>
+                    </Link>
 
-                    <button className="user-dropdown-item">
+
+                    <button
+                      type="button"
+                      className="user-dropdown-item"
+                    >
                       Paramèt
                     </button>
-                   
-                   <Link
-  to="/professional-setup"
-  className="user-dropdown-professional"
-  onClick={() => setUserMenuOpen(false)}
->
-  ★ Enskri kòm pwofesyonèl
-</Link>
+
+
+                    <Link
+                      to="/professional-setup"
+                      className="user-dropdown-professional"
+                      onClick={() =>
+                        setUserMenuOpen(false)
+                      }
+                    >
+                      ★ Enskri kòm pwofesyonèl
+                    </Link>
+
 
                     <div className="user-dropdown-divider" />
 
 
                     <button
+                      type="button"
                       className="user-dropdown-logout"
                       onClick={handleLogout}
                     >
@@ -217,7 +383,9 @@ const Navbar = ({ onRegisterClick }) => {
           {/* MOBILE MENU BUTTON */}
           <button
             className="mobile-menu-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() =>
+              setMenuOpen(!menuOpen)
+            }
             aria-label="Ouvri meni"
           >
             {menuOpen ? "✕" : "☰"}
@@ -269,35 +437,93 @@ const Navbar = ({ onRegisterClick }) => {
           </Link>
 
 
-          {/* MOBILE BUTTONS */}
-          <div className="mobile-menu-actions">
+          {/* MOBILE USER MENU */}
+          {user ? (
+            <div className="mobile-user-section">
 
-            {!user ? (
-              <>
-                <button
-                  className="login-btn"
-                  onClick={openLogin}
-                >
-                  Konekte
-                </button>
+              <div className="mobile-user-header">
 
-                <button
-                  className="register-btn"
-                  onClick={openRegister}
-                >
-                  Enskri
-                </button>
-              </>
-            ) : (
+                <div className="user-dropdown-avatar">
+                  {getInitials()}
+                </div>
+
+                <div>
+                  <strong>
+                    {user.firstName} {user.lastName}
+                  </strong>
+
+                  <span>
+                    Konekte
+                  </span>
+                </div>
+
+              </div>
+
+
+              <div className="user-dropdown-divider" />
+
+
+              <Link
+                to="/profile"
+                className="user-dropdown-item"
+                onClick={closeMenu}
+              >
+                Mon profil
+              </Link>
+
+
               <button
-                className="login-btn"
+                type="button"
+                className="user-dropdown-item"
+                onClick={closeMenu}
+              >
+                Paramèt
+              </button>
+
+
+              <Link
+                to="/professional-setup"
+                className="user-dropdown-professional"
+                onClick={closeMenu}
+              >
+                ★ Enskri kòm pwofesyonèl
+              </Link>
+
+
+              <div className="user-dropdown-divider" />
+
+
+              <button
+                type="button"
+                className="user-dropdown-logout"
                 onClick={handleLogout}
               >
                 Dekonekte
               </button>
-            )}
 
-          </div>
+            </div>
+          ) : (
+
+            /* MOBILE BUTTONS */
+            <div className="mobile-menu-actions">
+
+              <button
+                className="login-btn"
+                onClick={openLogin}
+              >
+                Konekte
+              </button>
+
+              <button
+                className="register-btn"
+                onClick={openRegister}
+              >
+                Enskri
+              </button>
+
+            </div>
+
+          )}
 
         </div>
 

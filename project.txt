@@ -1,0 +1,278 @@
+Wi 🔥 sa vle di **recherche a ap mache** jan nou te vle a.
+
+Kounye a nou gen yon bon baz:
+
+**Supabase → Professionals → Profile → Contact → Search**
+
+### Pwochen etap mwen rekòmande: ranplase done lokal yo nèt
+
+Kounye a `Professionals.jsx` ou a toujou gen:
+
+```js
+import professionals from "../data/professionals";
+```
+
+Sa vle di rechèch la toujou ap fèt sou `src/data/professionals.js`, pa dirèkteman sou Supabase.
+
+Nou ta dwe fè pwochen etap la konsa:
+
+```text
+Supabase
+   ↓
+Professionals Page
+   ↓
+Search service + location
+   ↓
+Professional Card
+   ↓
+Professional Profile
+   ↓
+Contact
+```
+
+Sa ap fè sit la **reyèlman database-driven**.
+
+### Apre sa, pwochen gwo etap yo
+
+1. **Professionals page → Supabase** ✅ pwochen
+2. **Search → Supabase** olye de `professionals.js`
+3. **Home → Supabase** pou 3 recommended professionals yo
+4. **Categories → kantite pwofesyonèl ki nan database la**
+5. **Professional Profile → Supabase** (nou deja kòmanse sa)
+6. **Contact → Supabase** ✅ nou deja fè li
+7. **Registration → Supabase** pou lè yon pwofesyonèl kreye kont li
+8. **Login/Auth** avèk Supabase
+9. **Dashboard pwofesyonèl** kote li ka modifye pwofil li
+10. Apre sa nou ka atake **reviews, messaging/contact requests, verification**, elatriye.
+
+**Mwen ta kòmanse ak #1 kounye a:** retire `professionals.js` kòm sous done pou paj `Professionals.jsx` epi fè paj la li dirèkteman nan Supabase.
+
+Si nou fè sa kounye a, **tout 7 pwofesyonèl yo ap soti nan menm database la**, epi rechèch sèvis + zòn nan ap travay sou vrè done yo.
+
+
+Wi. **Sa se yon bagay nou ta dwe planifye anvan nou finalize upload foto yo.** Epi pou yon platfòm tankou *Pwofesyonèl Lakay*, mwen ta konseye nou pa fè verifikasyon an sèlman kòm “moun nan voye yon foto ID”. Nou bezwen fè **identity verification** kòm yon etap apa.
+
+### Pi bon workflow la
+
+```text
+Kreye kont
+   ↓
+Konfigirasyon pwofesyonèl
+   ↓
+Non moun nan + dat nesans
+   ↓
+Upload pyès idantite
+   ↓
+Verifye pyès la
+   ↓
+Ekstrè non + dat nesans sou pyès la
+   ↓
+Konpare ak enfòmasyon moun nan bay
+   ↓
+Verifye vizaj
+   ↓
+Konpare selfie/live face ak foto ki sou ID
+   ↓
+Tout bagay koresponn?
+   ↓
+YES → verification_status = "verified"
+NO  → verification_status = "rejected"
+```
+
+### 1. Non sou pyès la vs non moun nan bay
+
+Wi, nou ta dwe konpare:
+
+**Moun nan antre:**
+
+> Delsonna Sony
+
+**ID a montre:**
+
+> Delsonna Sony
+
+Nou ka normalize non yo anvan konparezon an pou evite pwoblèm tankou:
+
+* `Delsonna Sony`
+* `DELSONNA SONY`
+* `Delsonna  Sony`
+
+Men **nou pa ta dwe fè yon senp exact string match sèlman**. Non sou dokiman ka gen middle name, aksan, siyati an premye, elatriye.
+
+---
+
+### 2. Foto ID a dwe verifye
+
+Nou ta dwe mande yon dokiman ak:
+
+* non
+* foto
+* dat nesans
+* nimewo dokiman
+* lòt enfòmasyon ki nesesè
+
+Epi sistèm nan dwe verifye si dokiman an sanble valid epi li pa evidamman manipile.
+
+---
+
+### 3. Selfie / live face
+
+Sa pi enpòtan toujou.
+
+Nou pa vle sèlman mande:
+
+> “Upload yon foto figi ou.”
+
+Paske yon moun ka pran **foto yon lòt moun**.
+
+Pi bon sistèm nan se **liveness verification**:
+
+```text
+Kamera
+ ↓
+Moun nan parèt
+ ↓
+Sistèm nan verifye li se yon moun reyèl
+ ↓
+Face match
+ ↓
+Selfie/live face ↔ photo sou ID
+```
+
+Sa diminye anpil risk pou yon moun itilize ID yon lòt moun.
+
+---
+
+### 4. Pa fè tout verifikasyon an dirèkteman nan browser la
+
+Mwen ta fè architecture la konsa:
+
+```text
+React / Vite
+      ↓
+Supabase Auth
+      ↓
+Supabase Database
+      ↓
+Supabase Storage
+      ↓
+Verification service
+      ↓
+Verification result
+```
+
+Se **verification service** la ki ta fè travay tankou:
+
+* OCR
+* document verification
+* name extraction
+* date-of-birth extraction
+* face matching
+* liveness
+* document authenticity
+
+Nou pa ta dwe eseye konstwi yon sistèm facial-recognition serye sèlman avèk React.
+
+---
+
+### 5. Mwen ta chanje database la tou
+
+Kounye a ou genyen:
+
+`professional_verifications`
+
+ak:
+
+```text
+professional_id
+document_type
+document_number
+identity_document
+face_verification
+verification_status
+```
+
+Sa bon kòm kòmansman.
+
+Men pita mwen ta ajoute bagay tankou:
+
+```text
+name_on_document
+date_of_birth_on_document
+name_match
+face_match
+liveness_check
+document_status
+rejection_reason
+verified_at
+```
+
+Konsa admin nan ka wè:
+
+| Verification | Rezilta      |
+| ------------ | ------------ |
+| Dokiman      | ✅ Valid      |
+| Non          | ✅ Koresponn  |
+| Dat nesans   | ✅ Koresponn  |
+| Face match   | ✅ Koresponn  |
+| Liveness     | ✅ Passed     |
+| Status       | **VERIFIED** |
+
+---
+
+### ⚠️ Yon bagay trè enpòtan
+
+Paske nou pral manyen **ID, nimewo dokiman, dat nesans ak done biyometrik**, nou pa ta dwe fè sistèm nan voye tout bagay sa yo bay nenpòt moun oswa mete yo sou pwofil piblik la.
+
+Kliyan an ta dwe wè sèlman yon bagay tankou:
+
+> 🟢 **Pwofesyonèl verifye**
+
+Li **pa ta dwe wè**:
+
+* foto ID
+* nimewo NIF/NINU/paspò
+* dat nesans
+* selfie
+* done facial verification
+
+---
+
+### Sa mwen ta rekòmande pou Pwofesyonèl Lakay
+
+Pou premye vèsyon an, nou ka konstwi:
+
+**Level 1 — Basic verification**
+
+* Non
+* Dat nesans
+* ID
+* Nimewo dokiman
+
+**Level 2 — Identity verification**
+
+* OCR dokiman
+* Non sou ID ↔ non kont
+* Dat nesans ↔ dat kont
+* Foto ID
+
+**Level 3 — Face verification**
+
+* Live selfie
+* Liveness
+* Face match ak foto ID
+
+**Level 4 — Approval**
+
+* Tout pase → `verified`
+* Youn echwe → `rejected`
+* Gen dout → `manual_review`
+
+Sa ap pi solid anpil pase jis mete yon bouton **“Upload ID”**.
+
+**Epi mwen dakò avèk ou: anvan nou kontinye ak `IdentityVerification.jsx`, li pi bon pou nou deside workflow verifikasyon sa a.** Apre sa nou ka bati kòd la sou workflow final la olye nou fè upload foto yo epi oblije refè yo pita.
+
+
+
+
+konekte  / dekonekte,mw vle moun nan konkete ou pou 2premye let  nan nomak prenom an paret.

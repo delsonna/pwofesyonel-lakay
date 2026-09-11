@@ -29,9 +29,17 @@ const ProfessionalSetup = () => {
     documentNumber: "",
   });
 
-  /* ================================
-     HANDLE INPUT
-  ================================= */
+  // =========================================
+  // FILES
+  // =========================================
+
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [identityDocument, setIdentityDocument] = useState(null);
+  const [faceVerification, setFaceVerification] = useState(null);
+
+  // =========================================
+  // HANDLE INPUT
+  // =========================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,14 +52,292 @@ const ProfessionalSetup = () => {
     setError("");
   };
 
-  /* ================================
-     STEP 1 → STEP 2
-  ================================= */
+  // =========================================
+  // PROFILE PHOTO
+  // =========================================
+
+  const handleProfilePhoto = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      setProfilePhoto(null);
+      return;
+    }
+
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError(
+        "Foto pwofil la dwe PNG, JPG oswa JPEG."
+      );
+
+      e.target.value = "";
+      setProfilePhoto(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError(
+        "Foto pwofil la pa dwe depase 5 MB."
+      );
+
+      e.target.value = "";
+      setProfilePhoto(null);
+      return;
+    }
+
+    setProfilePhoto(file);
+    setError("");
+  };
+
+  // =========================================
+  // CONVERT CAPTURED DATA TO FILE
+  // =========================================
+
+  const normalizeCapturedFile = async (
+    captured,
+    defaultName
+  ) => {
+    if (!captured) {
+      return null;
+    }
+
+    // Already a File
+    if (captured instanceof File) {
+      return captured;
+    }
+
+    // Blob
+    if (captured instanceof Blob) {
+      return new File(
+        [captured],
+        defaultName,
+        {
+          type: captured.type || "image/jpeg",
+        }
+      );
+    }
+
+    // Some components may return { file: File }
+    if (captured.file instanceof File) {
+      return captured.file;
+    }
+
+    // Some components may return { blob: Blob }
+    if (captured.blob instanceof Blob) {
+      return new File(
+        [captured.blob],
+        defaultName,
+        {
+          type:
+            captured.blob.type ||
+            "image/jpeg",
+        }
+      );
+    }
+
+    // Data URL
+    if (
+      typeof captured === "string" &&
+      captured.startsWith("data:")
+    ) {
+      try {
+        const response = await fetch(captured);
+        const blob = await response.blob();
+
+        return new File(
+          [blob],
+          defaultName,
+          {
+            type:
+              blob.type ||
+              "image/jpeg",
+          }
+        );
+      } catch (conversionError) {
+        console.error(
+          "Data URL conversion error:",
+          conversionError
+        );
+
+        return null;
+      }
+    }
+
+    return null;
+  };
+
+  // =========================================
+  // UPLOAD FILE TO SUPABASE STORAGE
+  // =========================================
+
+  const uploadFile = async (
+    bucketName,
+    file,
+    folder
+  ) => {
+    if (!file) {
+      throw new Error(
+        `Pa gen fichye pou upload nan ${bucketName}.`
+      );
+    }
+
+    const normalizedFile =
+      await normalizeCapturedFile(
+        file,
+        `verification-${Date.now()}.jpg`
+      );
+
+    if (!normalizedFile) {
+      throw new Error(
+        `Fichye pou ${bucketName} la pa valab.`
+      );
+    }
+
+    const originalName =
+      normalizedFile.name || "image.jpg";
+
+    const fileExtension =
+      originalName.includes(".")
+        ? originalName
+            .split(".")
+            .pop()
+            ?.toLowerCase()
+        : "jpg";
+
+    const safeExtension =
+      fileExtension || "jpg";
+
+    const fileName = `${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 10)}.${safeExtension}`;
+
+    const filePath =
+      `${folder}/${fileName}`;
+
+    console.log(
+      `Uploading ${bucketName}:`,
+      filePath
+    );
+
+    const {
+      error: uploadError,
+    } = await supabase.storage
+      .from(bucketName)
+      .upload(
+        filePath,
+        normalizedFile,
+        {
+          cacheControl: "3600",
+          upsert: false,
+          contentType:
+            normalizedFile.type ||
+            "image/jpeg",
+        }
+      );
+
+    if (uploadError) {
+      console.error(
+        `Upload error ${bucketName}:`,
+        uploadError
+      );
+
+      throw new Error(
+        `Upload echwe nan ${bucketName}: ${uploadError.message}`
+      );
+    }
+
+    console.log(
+      `Upload successful ${bucketName}:`,
+      filePath
+    );
+
+    return filePath;
+  };
+
+  // =========================================
+  // STEP 1 → STEP 2
+  // =========================================
 
   const handleNext = (e) => {
     e.preventDefault();
 
     setError("");
+
+    if (!formData.firstName.trim()) {
+      setError("Tanpri antre prenon ou.");
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      setError("Tanpri antre non ou.");
+      return;
+    }
+
+    if (!formData.birthDate) {
+      setError("Tanpri chwazi dat nesans ou.");
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      setError("Tanpri antre nimewo telefòn ou.");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError("Tanpri antre email ou.");
+      return;
+    }
+
+    if (!formData.whatsapp.trim()) {
+      setError("Tanpri antre nimewo WhatsApp ou.");
+      return;
+    }
+
+    if (!formData.profession.trim()) {
+      setError(
+        "Tanpri chwazi oswa antre metye ou."
+      );
+      return;
+    }
+
+    if (!formData.experience.trim()) {
+      setError(
+        "Tanpri chwazi ane eksperyans ou."
+      );
+      return;
+    }
+
+    if (!formData.location.trim()) {
+      setError("Tanpri antre zòn sèvis ou.");
+      return;
+    }
+
+    if (!formData.services.trim()) {
+      setError(
+        "Tanpri antre sèvis ou ofri yo."
+      );
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      setError(
+        "Tanpri ekri yon ti deskripsyon pwofesyonèl ou."
+      );
+      return;
+    }
+
+    if (!profilePhoto) {
+      setError(
+        "Tanpri chwazi yon foto pwofil."
+      );
+      return;
+    }
+
     setStep(2);
 
     window.scrollTo({
@@ -60,14 +346,43 @@ const ProfessionalSetup = () => {
     });
   };
 
-  /* ================================
-     STEP 2 → STEP 3
-  ================================= */
+  // =========================================
+  // STEP 2 → STEP 3
+  // =========================================
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     setError("");
+
+    if (!documentType) {
+      setError(
+        "Tanpri chwazi kalite dokiman an."
+      );
+      return;
+    }
+
+    if (!formData.documentNumber.trim()) {
+      setError(
+        "Tanpri antre nimewo dokiman ou."
+      );
+      return;
+    }
+
+    if (!identityDocument) {
+      setError(
+        "Tanpri pran foto dokiman idantite ou."
+      );
+      return;
+    }
+
+    if (!faceVerification) {
+      setError(
+        "Tanpri fè verifikasyon figi ou."
+      );
+      return;
+    }
+
     setStep(3);
 
     window.scrollTo({
@@ -76,20 +391,20 @@ const ProfessionalSetup = () => {
     });
   };
 
-  /* ================================
-     SAVE PROFESSIONAL
-  ================================= */
+  // =========================================
+  // SAVE PROFESSIONAL
+  // =========================================
 
   const handleSave = async () => {
+    if (saving) return;
+
     try {
       setSaving(true);
       setError("");
 
-      /*
-      =========================================
-      VERIFY USER ONLY WHEN SAVING
-      =========================================
-      */
+      // =======================================
+      // 1. VERIFY CURRENT USER
+      // =======================================
 
       const {
         data: { user },
@@ -97,7 +412,9 @@ const ProfessionalSetup = () => {
       } = await supabase.auth.getUser();
 
       if (userError) {
-        throw userError;
+        throw new Error(
+          `Nou pa kapab verifye kont ou: ${userError.message}`
+        );
       }
 
       if (!user) {
@@ -106,54 +423,192 @@ const ProfessionalSetup = () => {
         );
       }
 
-      /*
-      =========================================
-      VALIDATION
-      =========================================
-      */
+      console.log(
+        "CURRENT USER:",
+        user.id
+      );
 
-      if (!formData.firstName.trim()) {
-        throw new Error("Tanpri antre prenon ou.");
+      // =======================================
+      // 2. FINAL VALIDATION
+      // =======================================
+
+      if (!profilePhoto) {
+        throw new Error(
+          "Foto pwofil la obligatwa."
+        );
       }
 
-      if (!formData.lastName.trim()) {
-        throw new Error("Tanpri antre non ou.");
+      if (!identityDocument) {
+        throw new Error(
+          "Dokiman idantite a obligatwa."
+        );
       }
 
-      if (!formData.phone.trim()) {
-        throw new Error("Tanpri antre nimewo telefòn ou.");
+      if (!faceVerification) {
+        throw new Error(
+          "Verifikasyon figi a obligatwa."
+        );
       }
 
-      if (!formData.email.trim()) {
-        throw new Error("Tanpri antre email ou.");
+      if (!formData.documentNumber.trim()) {
+        throw new Error(
+          "Nimewo dokiman an obligatwa."
+        );
       }
 
-      if (!formData.profession.trim()) {
-        throw new Error("Tanpri chwazi metye ou.");
+      // =======================================
+      // 3. NORMALIZE VERIFICATION FILES
+      // =======================================
+
+      const normalizedIdentityDocument =
+        await normalizeCapturedFile(
+          identityDocument,
+          "identity-document.jpg"
+        );
+
+      const normalizedFaceVerification =
+        await normalizeCapturedFile(
+          faceVerification,
+          "face-verification.jpg"
+        );
+
+      if (!normalizedIdentityDocument) {
+        throw new Error(
+          "Dokiman idantite a pa yon fichye ki valab."
+        );
       }
 
-      if (!formData.location.trim()) {
-        throw new Error("Tanpri antre zòn sèvis ou.");
+      if (!normalizedFaceVerification) {
+        throw new Error(
+          "Foto verifikasyon figi a pa yon fichye ki valab."
+        );
       }
 
-      if (!formData.services.trim()) {
-        throw new Error("Tanpri antre sèvis ou ofri yo.");
+      console.log(
+        "IDENTITY FILE:",
+        normalizedIdentityDocument
+      );
+
+      console.log(
+        "FACE FILE:",
+        normalizedFaceVerification
+      );
+
+      // =======================================
+      // 4. UNIQUE FOLDER
+      // =======================================
+
+      const uniqueFolder =
+        `${user.id}-${Date.now()}`;
+
+      console.log(
+        "UNIQUE FOLDER:",
+        uniqueFolder
+      );
+
+      // =======================================
+      // 5. UPLOAD PROFILE PHOTO
+      // =======================================
+
+      const profileImagePath =
+        await uploadFile(
+          "professional-images",
+          profilePhoto,
+          uniqueFolder
+        );
+
+      if (!profileImagePath) {
+        throw new Error(
+          "Foto pwofil la pa t jwenn yon path apre upload."
+        );
       }
 
-      /*
-      =========================================
-      FULL NAME
-      =========================================
-      */
+      // =======================================
+      // 6. GET PUBLIC PROFILE IMAGE URL
+      // =======================================
+
+      const {
+        data: publicImageData,
+      } = supabase.storage
+        .from("professional-images")
+        .getPublicUrl(
+          profileImagePath
+        );
+
+      const profileImageUrl =
+        publicImageData?.publicUrl ||
+        null;
+
+      if (!profileImageUrl) {
+        throw new Error(
+          "Nou pa t kapab kreye URL foto pwofil la."
+        );
+      }
+
+      console.log(
+        "PROFILE IMAGE PATH:",
+        profileImagePath
+      );
+
+      console.log(
+        "PROFILE IMAGE URL:",
+        profileImageUrl
+      );
+
+      // =======================================
+      // 7. UPLOAD IDENTITY DOCUMENT
+      // =======================================
+
+      const identityDocumentPath =
+        await uploadFile(
+          "identity-documents",
+          normalizedIdentityDocument,
+          uniqueFolder
+        );
+
+      if (!identityDocumentPath) {
+        throw new Error(
+          "Dokiman idantite a pa t jwenn yon path apre upload."
+        );
+      }
+
+      console.log(
+        "IDENTITY DOCUMENT PATH:",
+        identityDocumentPath
+      );
+
+      // =======================================
+      // 8. UPLOAD FACE VERIFICATION
+      // =======================================
+
+      const faceVerificationPath =
+        await uploadFile(
+          "face-verification",
+          normalizedFaceVerification,
+          uniqueFolder
+        );
+
+      if (!faceVerificationPath) {
+        throw new Error(
+          "Foto figi a pa t jwenn yon path apre upload."
+        );
+      }
+
+      console.log(
+        "FACE VERIFICATION PATH:",
+        faceVerificationPath
+      );
+
+      // =======================================
+      // 9. FULL NAME
+      // =======================================
 
       const fullName =
         `${formData.firstName.trim()} ${formData.lastName.trim()}`;
 
-      /*
-      =========================================
-      INSERT PROFESSIONAL
-      =========================================
-      */
+      // =======================================
+      // 10. INSERT PROFESSIONAL
+      // =======================================
 
       const {
         data: professional,
@@ -164,83 +619,157 @@ const ProfessionalSetup = () => {
           {
             name: fullName,
 
-            profession: formData.profession.trim(),
+            profession:
+              formData.profession.trim(),
 
-            location: formData.location.trim(),
+            location:
+              formData.location.trim(),
 
             rating: 0,
 
-            image: null,
+            image:
+              profileImageUrl,
 
-            description: formData.description.trim(),
+            description:
+              formData.description.trim(),
 
-            first_name: formData.firstName.trim(),
+            first_name:
+              formData.firstName.trim(),
 
-            last_name: formData.lastName.trim(),
+            last_name:
+              formData.lastName.trim(),
 
-            phone: formData.phone.trim(),
+              birth_date: 
+              formData.birthDate,
 
-            email: formData.email.trim(),
+            phone:
+              formData.phone.trim(),
 
-            whatsapp: formData.whatsapp.trim(),
+            email:
+              formData.email.trim(),
+
+            whatsapp:
+              formData.whatsapp.trim(),
           },
         ])
         .select()
         .single();
 
       if (professionalError) {
-        throw professionalError;
+        console.error(
+          "Professional insert error:",
+          professionalError
+        );
+
+        throw new Error(
+          `Pwofil la pa t anrejistre: ${professionalError.message}`
+        );
       }
 
-      /*
-      =========================================
-      SAVE IDENTITY VERIFICATION
-      =========================================
-      */
+      if (!professional?.id) {
+        throw new Error(
+          "Pwofil la pa t retounen yon ID apre anrejistreman."
+        );
+      }
 
-      if (professional) {
-        const {
-          error: verificationError,
-        } = await supabase
-          .from("professional_verifications")
-          .insert([
-            {
-              professional_id: professional.id,
+      console.log(
+        "PROFESSIONAL CREATED:",
+        professional
+      );
 
-              document_type: documentType,
+      // =======================================
+      // 11. PREPARE VERIFICATION DATA
+      // =======================================
 
-              document_number:
-                formData.documentNumber.trim(),
+      const verificationData = {
+        professional_id:
+          professional.id,
 
-              identity_document: null,
+        document_type:
+          documentType,
 
-              face_verification: null,
+        document_number:
+          formData.documentNumber.trim(),
 
-              verification_status: "pending",
-            },
-          ]);
+        identity_document:
+          identityDocumentPath,
 
-       if (verificationError) {
-  console.error("Verification error:", verificationError);
+        face_verification:
+          faceVerificationPath,
+
+        verification_status:
+          "pending",
+      };
+
+      // IMPORTANT DEBUG
+      console.log(
+        "================================="
+      );
+
+      console.log(
+        "VERIFICATION DATA SENT TO SUPABASE:"
+      );
+
+      console.log(
+        verificationData
+      );
+
+      console.log(
+        "professional_id:",
+        verificationData.professional_id
+      );
+
+      console.log(
+        "identity_document:",
+        verificationData.identity_document
+      );
+
+      console.log(
+        "face_verification:",
+        verificationData.face_verification
+      );
+
+      console.log(
+        "================================="
+      );
+
+      // =======================================
+      // 12. INSERT VERIFICATION
+      // =======================================
+
+const {
+  error: verificationError,
+} = await supabase
+  .from("professional_verifications")
+  .insert([
+    verificationData,
+  ]);
+
+if (verificationError) {
+  console.error(
+    "Verification insert error:",
+    verificationError
+  );
 
   throw new Error(
     `Pwofil la anrejistre, men verifikasyon an pa t anrejistre: ${verificationError.message}`
   );
 }
-      }
 
-      /*
-      =========================================
-      SUCCESS
-      =========================================
-      */
+console.log(
+  "VERIFICATION CREATED SUCCESSFULLY"
+);
 
-      setSaved(true);
+// =======================================
+// 13. SUCCESS
+// =======================================
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+setSaved(true);
+
+window.scrollTo({
+  top: 0,
+  behavior: "smooth",
+});
 
     } catch (error) {
       console.error(
@@ -249,18 +778,16 @@ const ProfessionalSetup = () => {
       );
 
       setError(
-        error.message ||
+        error?.message ||
           "Gen yon pwoblèm pandan pwofil lan t ap anrejistre."
       );
-
     } finally {
       setSaving(false);
     }
   };
-
-  /* ================================
-     SUCCESS PAGE
-  ================================= */
+  // =========================================
+  // SUCCESS PAGE
+  // =========================================
 
   if (saved) {
     return (
@@ -287,6 +814,11 @@ const ProfessionalSetup = () => {
               anrejistre avèk siksè.
             </p>
 
+            <p>
+              Dokiman ou yo resevwa epi pwofil ou a
+              ap tann verifikasyon administratè a.
+            </p>
+
             <button
               type="button"
               className="setup-submit success-button"
@@ -303,9 +835,9 @@ const ProfessionalSetup = () => {
     );
   }
 
-  /* ================================
-     MAIN PAGE
-  ================================= */
+  // =========================================
+  // MAIN PAGE
+  // =========================================
 
   return (
     <main className="professional-setup">
@@ -318,6 +850,7 @@ const ProfessionalSetup = () => {
           className="setup-back"
           type="button"
           onClick={() => {
+
             if (step === 1) {
               navigate("/");
             } else {
@@ -328,11 +861,11 @@ const ProfessionalSetup = () => {
                 behavior: "smooth",
               });
             }
+
           }}
         >
           ← Retounen
         </button>
-
 
         {/* HEADER */}
 
@@ -348,11 +881,11 @@ const ProfessionalSetup = () => {
 
           <p>
             Bay kèk enfòmasyon sou ou ak sèvis ou yo
-            pou kliyan yo ka konnen pwofesyonèl yo ap kontakte a.
+            pou kliyan yo ka konnen pwofesyonèl yo ap
+            kontakte a.
           </p>
 
         </div>
-
 
         {/* ERROR */}
 
@@ -362,13 +895,14 @@ const ProfessionalSetup = () => {
           </div>
         )}
 
-
         <form
           className="setup-form"
           onSubmit={
             step === 1
               ? handleNext
-              : handleSubmit
+              : step === 2
+              ? handleSubmit
+              : (e) => e.preventDefault()
           }
         >
 
@@ -378,8 +912,6 @@ const ProfessionalSetup = () => {
 
           {step === 1 && (
             <>
-
-              {/* PERSONAL INFORMATION */}
 
               <section className="setup-section">
 
@@ -396,17 +928,15 @@ const ProfessionalSetup = () => {
                     </h2>
 
                     <p>
-                      Enfòmasyon sa yo ap ede kliyan yo idantifye ou.
+                      Enfòmasyon sa yo ap ede kliyan yo
+                      idantifye ou.
                     </p>
 
                   </div>
 
                 </div>
 
-
                 <div className="setup-grid">
-
-                  {/* PRENON */}
 
                   <div className="setup-field">
 
@@ -425,9 +955,6 @@ const ProfessionalSetup = () => {
 
                   </div>
 
-
-                  {/* NON */}
-
                   <div className="setup-field">
 
                     <label>
@@ -445,9 +972,6 @@ const ProfessionalSetup = () => {
 
                   </div>
 
-
-                  {/* DAT NESANS */}
-
                   <div className="setup-field">
 
                     <label>
@@ -463,9 +987,6 @@ const ProfessionalSetup = () => {
                     />
 
                   </div>
-
-
-                  {/* TELEFÒN */}
 
                   <div className="setup-field">
 
@@ -484,9 +1005,6 @@ const ProfessionalSetup = () => {
 
                   </div>
 
-
-                  {/* EMAIL */}
-
                   <div className="setup-field">
 
                     <label>
@@ -503,9 +1021,6 @@ const ProfessionalSetup = () => {
                     />
 
                   </div>
-
-
-                  {/* WHATSAPP */}
 
                   <div className="setup-field">
 
@@ -526,7 +1041,6 @@ const ProfessionalSetup = () => {
 
                 </div>
 
-
                 {/* FOTO PWOFIL */}
 
                 <div className="setup-field">
@@ -537,15 +1051,25 @@ const ProfessionalSetup = () => {
 
                   <input
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/png,image/jpeg,image/jpg"
+                    onChange={handleProfilePhoto}
+                    required
                   />
+
+                  {profilePhoto && (
+                    <small>
+                      ✓ Foto chwazi:{" "}
+                      {profilePhoto.name}
+                    </small>
+                  )}
+
+                  <small>
+                    PNG, JPG oswa JPEG — maksimòm 5 MB.
+                  </small>
 
                 </div>
 
               </section>
-
-
-              {/* PROFESSIONAL INFORMATION */}
 
               <section className="setup-section">
 
@@ -569,10 +1093,7 @@ const ProfessionalSetup = () => {
 
                 </div>
 
-
                 <div className="setup-grid">
-
-                  {/* METYE */}
 
                   <div className="setup-field">
 
@@ -610,6 +1131,8 @@ const ProfessionalSetup = () => {
                           }));
 
                         }
+
+                        setError("");
 
                       }}
                       required={!otherProfession}
@@ -669,18 +1192,20 @@ const ProfessionalSetup = () => {
 
                     </select>
 
-
                     {otherProfession && (
 
                       <input
                         type="text"
                         value={formData.profession}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFormData((prev) => ({
                             ...prev,
-                            profession: e.target.value,
-                          }))
-                        }
+                            profession:
+                              e.target.value,
+                          }));
+
+                          setError("");
+                        }}
                         placeholder="Ekri non metye ou..."
                         required
                       />
@@ -688,9 +1213,6 @@ const ProfessionalSetup = () => {
                     )}
 
                   </div>
-
-
-                  {/* EXPERIENCE */}
 
                   <div className="setup-field">
 
@@ -733,9 +1255,6 @@ const ProfessionalSetup = () => {
 
                   </div>
 
-
-                  {/* LOCATION */}
-
                   <div className="setup-field">
 
                     <label>
@@ -752,9 +1271,6 @@ const ProfessionalSetup = () => {
                     />
 
                   </div>
-
-
-                  {/* SERVICES */}
 
                   <div className="setup-field">
 
@@ -775,9 +1291,6 @@ const ProfessionalSetup = () => {
 
                 </div>
 
-
-                {/* DESCRIPTION */}
-
                 <div className="setup-field">
 
                   <label>
@@ -797,9 +1310,6 @@ const ProfessionalSetup = () => {
 
               </section>
 
-
-              {/* NEXT */}
-
               <div className="setup-submit-area">
 
                 <p>
@@ -817,7 +1327,6 @@ const ProfessionalSetup = () => {
 
             </>
           )}
-
 
           {/* =====================================
               STEP 2
@@ -841,14 +1350,13 @@ const ProfessionalSetup = () => {
                     </h2>
 
                     <p>
-                      Verifye idantite ou pou pwoteje kliyan
-                      ak pwofesyonèl yo.
+                      Verifye idantite ou pou pwoteje
+                      kliyan ak pwofesyonèl yo.
                     </p>
 
                   </div>
 
                 </div>
-
 
                 <div className="setup-field">
 
@@ -872,7 +1380,6 @@ const ProfessionalSetup = () => {
                       NIF
                     </button>
 
-
                     <button
                       type="button"
                       className={
@@ -886,7 +1393,6 @@ const ProfessionalSetup = () => {
                     >
                       NINU
                     </button>
-
 
                     <button
                       type="button"
@@ -906,7 +1412,6 @@ const ProfessionalSetup = () => {
 
                 </div>
 
-
                 <div className="setup-field">
 
                   <label>
@@ -925,9 +1430,6 @@ const ProfessionalSetup = () => {
                 </div>
 
               </section>
-
-
-              {/* IDENTITY VERIFICATION */}
 
               <section className="setup-section">
 
@@ -951,11 +1453,65 @@ const ProfessionalSetup = () => {
 
                 </div>
 
+                <IdentityVerification
+                  onDocumentCaptured={
+                    (file) => {
+                      console.log(
+                        "IDENTITY DOCUMENT RECEIVED:",
+                        file
+                      );
 
-                <IdentityVerification />
+                      setIdentityDocument(file);
+                      setError("");
+                    }
+                  }
+
+                  onFaceCaptured={
+                    (file) => {
+                      console.log(
+                        "FACE VERIFICATION RECEIVED:",
+                        file
+                      );
+
+                      setFaceVerification(file);
+                      setError("");
+                    }
+                  }
+                />
+
+                <div className="confirmation-grid">
+
+                  <div className="confirmation-item">
+
+                    <small>
+                      DOKIMAN IDANTITE
+                    </small>
+
+                    <strong>
+                      {identityDocument
+                        ? "✓ Dokiman pare"
+                        : "Poko pran dokiman"}
+                    </strong>
+
+                  </div>
+
+                  <div className="confirmation-item">
+
+                    <small>
+                      FOTO FIGI
+                    </small>
+
+                    <strong>
+                      {faceVerification
+                        ? "✓ Foto figi pare"
+                        : "Poko fè verifikasyon"}
+                    </strong>
+
+                  </div>
+
+                </div>
 
               </section>
-
 
               <div className="setup-submit-area">
 
@@ -974,7 +1530,6 @@ const ProfessionalSetup = () => {
 
             </>
           )}
-
 
           {/* =====================================
               STEP 3
@@ -998,14 +1553,13 @@ const ProfessionalSetup = () => {
                     </h2>
 
                     <p>
-                      Verifye enfòmasyon ou yo anvan ou
-                      anrejistre pwofil la.
+                      Verifye enfòmasyon ou yo anvan
+                      ou anrejistre pwofil la.
                     </p>
 
                   </div>
 
                 </div>
-
 
                 <div className="confirmation-grid">
 
@@ -1052,6 +1606,13 @@ const ProfessionalSetup = () => {
                   </div>
 
                   <div className="confirmation-item">
+                    <small>Eksperyans</small>
+                    <strong>
+                      {formData.experience}
+                    </strong>
+                  </div>
+
+                  <div className="confirmation-item">
                     <small>Zòn sèvis</small>
                     <strong>
                       {formData.location}
@@ -1065,17 +1626,40 @@ const ProfessionalSetup = () => {
                     </strong>
                   </div>
 
+                  <div className="confirmation-item">
+                    <small>Dokiman</small>
+                    <strong>
+                      {documentType}
+                    </strong>
+                  </div>
+
+                  <div className="confirmation-item">
+                    <small>DOKIMAN IDANTITE</small>
+                    <strong>
+                      {identityDocument
+                        ? "✓ Pare"
+                        : "Poko pare"}
+                    </strong>
+                  </div>
+
+                  <div className="confirmation-item">
+                    <small>FOTO FIGI</small>
+                    <strong>
+                      {faceVerification
+                        ? "✓ Pare"
+                        : "Poko pare"}
+                    </strong>
+                  </div>
+
                 </div>
 
               </section>
 
-
-              {/* SAVE */}
-
               <div className="setup-submit-area">
 
                 <p>
-                  🔒 Tout enfòmasyon yo pare pou anrejistreman.
+                  🔒 Tout enfòmasyon yo pare pou
+                  anrejistreman an.
                 </p>
 
                 <button

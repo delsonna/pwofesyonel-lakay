@@ -10,7 +10,7 @@ import ProfessionalProfile from "./pages/ProfessionalProfile";
 import ProfessionalContact from "./pages/ProfessionalContact";
 import ProfessionalSetup from "./pages/ProfessionalSetup";
 import IdentityVerification from "./components/IdentityVerification";
-
+import ProfessionalEdit from "./pages/ProfessionalEdit";
 import DatabaseTest from "./pages/DatabaseTest";
 
 function App() {
@@ -77,7 +77,15 @@ function App() {
           path="/database-test"
           element={<DatabaseTest />}
         />
+          <Route
+  path="/profile"
+  element={<ProfessionalProfile />}
+/>
 
+<Route
+  path="/professional/:id/edit"
+  element={<ProfessionalEdit />}
+/>
       </Routes>
     </BrowserRouter>
   );
