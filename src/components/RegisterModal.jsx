@@ -212,9 +212,8 @@ const RegisterModal = ({
 
             <p>
               Kont ou kreye avèk siksè.
-              Si Supabase mande verifikasyon
-              email, ale nan bwat resepsyon ou
-              pou konfime email la.
+              SVP, ale nan bwat resepsyon ou
+              pou konfime email la.Avan ou konekte
             </p>
 
             <button

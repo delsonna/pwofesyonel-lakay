@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -18,9 +19,23 @@ const Professionals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Chaje pwofesyonèl yo soti nan Supabase
+  // =========================================
+  // PAGINATION
+  // =========================================
+
+  const PROFESSIONALS_PER_PAGE = 9;
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // =========================================
+  // CHAJЕ PWOFESYONÈL YO SOTI NAN SUPABASE
+  // =========================================
+
   useEffect(() => {
     const fetchProfessionals = async () => {
+      setLoading(true);
+      setError("");
+
       const { data, error } = await supabase
         .from("professionals")
         .select("*");
@@ -38,7 +53,10 @@ const Professionals = () => {
     fetchProfessionals();
   }, []);
 
-  // Filtre pwofesyonèl yo
+  // =========================================
+  // FILTRE PWOFESYONÈL YO
+  // =========================================
+
   const filteredProfessionals = professionals.filter((professional) => {
     const matchesService =
       service.trim() === "" ||
@@ -55,13 +73,72 @@ const Professionals = () => {
     return matchesService && matchesLocation;
   });
 
+  // =========================================
+  // TOTAL PAJ YO
+  // =========================================
+
+  const totalPages = Math.ceil(
+    filteredProfessionals.length / PROFESSIONALS_PER_PAGE
+  );
+
+  // =========================================
+  // SI FILTÈ YO CHANJE
+  // RETOUNEN SOU PAJ 1
+  // =========================================
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [service, location]);
+
+  // =========================================
+  // PWOFESYONÈL POU PAJ AKTYÈL LA
+  // =========================================
+
+  const startIndex =
+    (currentPage - 1) * PROFESSIONALS_PER_PAGE;
+
+  const endIndex =
+    startIndex + PROFESSIONALS_PER_PAGE;
+
+  const currentProfessionals =
+    filteredProfessionals.slice(startIndex, endIndex);
+
+  // =========================================
+  // CHANJE PAJ
+  // =========================================
+
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) {
+      return;
+    }
+
+    setCurrentPage(page);
+
+    // Retounen anlè lis pwofesyonèl yo
+    setTimeout(() => {
+      const listSection = document.querySelector(
+        ".professionals-list-section"
+      );
+
+      if (listSection) {
+        listSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 0);
+  };
+
   return (
     <>
       <Navbar />
 
       <main className="professionals-page">
 
-        {/* PAGE HEADER */}
+        {/* =========================================
+            PAGE HEADER
+        ========================================= */}
+
         <section className="professionals-header">
 
           <div className="professionals-header-content">
@@ -83,7 +160,10 @@ const Professionals = () => {
         </section>
 
 
-        {/* SEARCH */}
+        {/* =========================================
+            SEARCH
+        ========================================= */}
+
         <section className="professionals-search">
 
           <div className="professionals-search-container">
@@ -137,10 +217,15 @@ const Professionals = () => {
         </section>
 
 
-        {/* PROFESSIONALS LIST */}
+        {/* =========================================
+            PROFESSIONALS LIST
+        ========================================= */}
+
         <section className="professionals-list-section">
 
           <div className="professionals-list-container">
+
+            {/* LIST HEADER */}
 
             <div className="professionals-list-header">
 
@@ -184,7 +269,10 @@ const Professionals = () => {
             </div>
 
 
-            {/* CARDS */}
+            {/* =========================================
+                CARDS
+            ========================================= */}
+
             <div className="professionals-page-grid">
 
               {loading ? (
@@ -211,9 +299,9 @@ const Professionals = () => {
 
                 </div>
 
-              ) : filteredProfessionals.length > 0 ? (
+              ) : currentProfessionals.length > 0 ? (
 
-                filteredProfessionals.map((professional) => (
+                currentProfessionals.map((professional) => (
 
                   <ProfessionalCard
                     key={professional.id}
@@ -244,6 +332,93 @@ const Professionals = () => {
               )}
 
             </div>
+
+
+            {/* =========================================
+                PAGINATION
+            ========================================= */}
+
+            {!loading &&
+              !error &&
+              filteredProfessionals.length > 0 &&
+              totalPages > 1 && (
+
+                <div className="professionals-pagination">
+
+                  {/* PREVIOUS */}
+
+                  <button
+                    className="pagination-arrow"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    aria-label="Pwochen paj anvan"
+                  >
+                    ← <span>Anvan</span>
+                  </button>
+
+
+                  {/* PAGE NUMBERS */}
+
+                  <div className="pagination-numbers">
+
+                    {Array.from(
+                      { length: totalPages },
+                      (_, index) => index + 1
+                    ).map((page) => (
+
+                      <button
+                        key={page}
+                        className={`pagination-number ${
+                          currentPage === page
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => goToPage(page)}
+                        aria-label={`Paj ${page}`}
+                        aria-current={
+                          currentPage === page
+                            ? "page"
+                            : undefined
+                        }
+                      >
+                        {page}
+                      </button>
+
+                    ))}
+
+                  </div>
+
+
+                  {/* NEXT */}
+
+                  <button
+                    className="pagination-arrow"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    aria-label="Pwochen paj"
+                  >
+                    <span>Apre</span> →
+                  </button>
+
+                </div>
+
+              )}
+
+
+            {/* PAGINATION INFO */}
+
+            {!loading &&
+              !error &&
+              filteredProfessionals.length > 0 &&
+              totalPages > 1 && (
+
+                <div className="pagination-info">
+
+                  Paj {currentPage} sou {totalPages}
+
+                </div>
+
+              )}
 
           </div>
 

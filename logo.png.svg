@@ -1,0 +1,9 @@
+<svg width="1200" height="400" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Badj anblèm PL -->
+  <rect x="40" y="80" width="240" height="240" rx="56" fill="#3E2E20"/>
+  <text x="160" y="232" font-family="Arial, sans-serif" font-weight="800" font-size="110" fill="#FFFFFF" text-anchor="middle">PL</text>
+  
+  <!-- Tèks Pwofesyonèl Lakay -->
+  <text x="330" y="195" font-family="Poppins, Arial, sans-serif" font-weight="700" font-size="95" fill="#261C14">Pwofesyonèl <tspan fill="#8A5A36">Lakay</tspan></text>
+  <text x="335" y="275" font-family="Poppins, Arial, sans-serif" font-weight="400" font-size="42" fill="#7C6A59">Sèvis serye ak rapid</text>
+</svg>

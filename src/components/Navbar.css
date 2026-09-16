@@ -1,606 +1,597 @@
-            /* =========================
-   NAVBAR
-========================= */
+/* =========================================================
+   NAVBAR — PWOFEZYONÈL LAKAY
+   RESPONSIVE: LAPTOP • TABLET • PHONE
+   ========================================================= */
 
 .navbar {
   width: 100%;
-  height: 82px;
-  background: #f7efe3;
-  border-bottom: 1px solid #eadbc8;
+  background: #f7f1e7;
+  border-bottom: 1px solid rgba(91, 62, 42, 0.12);
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
 .navbar-container {
+  width: 100%;
   max-width: 1200px;
-  height: 100%;
+  height: 72px;
   margin: 0 auto;
   padding: 0 24px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
+  box-sizing: border-box;
 }
 
-/* =========================
+/* =========================================================
    LOGO
-========================= */
+   ========================================================= */
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 11px;
+  height: 58px;
+  flex-shrink: 0;
   text-decoration: none;
+  background: transparent;
 }
 
-.logo-icon {
-  width: 44px;
-  height: 44px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #5a3e2b;
-  color: #fffaf3;
-
-  border-radius: 11px;
-
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+.site-logo {
+  display: block;
+  width: 185px;
+  max-height: 56px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  outline: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.logo-text {
-  font-size: 18px;
-  font-weight: 500;
-
-  color: #342319;
-  letter-spacing: -0.3px;
+.logo:hover {
+  background: transparent;
 }
 
-.logo-text strong {
-  color: #7a5438;
-  font-weight: 800;
+.logo:hover .site-logo {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-/* =========================
-   NAVIGATION LINKS
-========================= */
+/* =========================================================
+   DESKTOP NAV LINKS
+   ========================================================= */
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 38px;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+  min-width: 0;
 }
 
 .nav-links a {
   position: relative;
-
-  color: #6b5544;
+  padding: 8px 2px;
+  color: #5b3e2a;
+  text-decoration: none;
   font-size: 20px;
   font-weight: 700;
+  white-space: nowrap;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
 
-  text-decoration: none;
-
-  transition: color 0.25s ease;
+.nav-links a:hover {
+  color: #3f291c;
 }
 
 .nav-links a::after {
   content: "";
-
   position: absolute;
-
   left: 0;
-  bottom: -8px;
-
+  bottom: 1px;
   width: 0;
   height: 2px;
-
-  background: #8b5e3c;
-
-  transition: width 0.25s ease;
-}
-
-.nav-links a:hover {
-  color: #5a3e2b;
+  background: #5b3e2a;
+  transition: width 0.2s ease;
 }
 
 .nav-links a:hover::after {
   width: 100%;
 }
 
-/* =========================
-   NAVBAR BUTTONS
-========================= */
+/* =========================================================
+   DESKTOP ACTIONS
+   ========================================================= */
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .login-btn,
 .register-btn {
-  height: 43px;
-
-  padding: 0 19px;
-
-  border-radius: 9px;
-
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 700;
-
-  transition: all 0.25s ease;
-
   cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: background 0.2s ease,
+              border-color 0.2s ease,
+              color 0.2s ease,
+              transform 0.2s ease;
 }
 
 .login-btn {
+  border: 1px solid #5b3e2a;
   background: transparent;
-
-  border: 1px solid #cdbba6;
-  color: #5a3e2b;
+  color: #5b3e2a;
 }
 
 .login-btn:hover {
-  background: #efe2d1;
-}
-
-.register-btn {
-  border: 1px solid #5a3e2b;
-
-  background: #5a3e2b;
-  color: #fffaf3;
-}
-
-.register-btn:hover {
-  background: #3f2b1e;
-  border-color: #3f2b1e;
-
+  background: #5b3e2a;
+  color: #ffffff;
   transform: translateY(-1px);
 }
 
-/* =========================
-   MOBILE MENU BUTTON
-========================= */
-
-.mobile-menu-btn {
-  display: none;
+.register-btn {
+  border: 1px solid #5b3e2a;
+  background: #5b3e2a;
+  color: #ffffff;
 }
 
-/* =========================
-   MOBILE MENU
-========================= */
-
-.mobile-menu {
-  display: none;
+.register-btn:hover {
+  background: #3f291c;
+  border-color: #3f291c;
+  transform: translateY(-1px);
 }
 
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 768px) {
-
-  .navbar {
-    width: 100%;
-    height: auto;
-  }
-
-  .navbar .navbar-container {
-    width: 100%;
-    min-height: 64px;
-
-    padding: 10px 16px;
-
-    box-sizing: border-box;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  /* LOGO */
-
-  .navbar .logo {
-    display: flex;
-    align-items: center;
-  }
-
-  .navbar .logo-text {
-    font-size: 16px;
-    white-space: nowrap;
-  }
-
-  .navbar .logo-icon {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-  }
-
-  /* HIDE DESKTOP MENU */
-
-  .navbar .nav-links {
-    display: none;
-  }
-
-  .navbar .nav-actions {
-    display: none;
-  }
-
-  /* HAMBURGER */
-
-  .navbar .mobile-menu-btn {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 44px;
-    height: 44px;
-
-    margin-left: auto;
-
-    border: none;
-    border-radius: 10px;
-
-    background: transparent;
-
-    font-size: 27px;
-
-    cursor: pointer;
-  }
-
-  /* MOBILE MENU */
-
-  .navbar .mobile-menu {
-    display: none;
-
-    width: 100%;
-
-    padding: 15px 18px 20px;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border-top: 1px solid #eeeeee;
-
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  }
-
-  .navbar .mobile-menu.active {
-    display: block;
-  }
-
-  /* MOBILE LINKS */
-
-  .navbar .mobile-menu > a {
-    display: block;
-
-    padding: 14px 5px;
-
-    color: #222222;
-
-    text-decoration: none;
-
-    font-size: 16px;
-    font-weight: 500;
-
-    border-bottom: 1px solid #f1f1f1;
-  }
-
-  .navbar .mobile-menu > a:hover {
-    color: #b8860b;
-  }
-
-  /* MOBILE BUTTONS */
-
-  .navbar .mobile-menu-actions {
-    display: flex !important;
-
-    align-items: center;
-
-    gap: 10px;
-
-    width: 100%;
-
-    margin-top: 20px;
-  }
-
-  .navbar .mobile-menu-actions .login-btn,
-  .navbar .mobile-menu-actions .register-btn {
-    display: block !important;
-
-    visibility: visible !important;
-    opacity: 1 !important;
-
-    flex: 1;
-
-    width: 50%;
-
-    padding: 12px 10px;
-
-    border-radius: 8px;
-
-    font-size: 14px;
-
-    cursor: pointer;
-  }
-}
-
-
-
-
-
-/* ================================
-   USER MENU
-================================ */
+/* =========================================================
+   USER AVATAR
+   ========================================================= */
 
 .user-menu-container {
   position: relative;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
-
-
-/* USER AVATAR BUTTON */
 
 .user-avatar-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  background: transparent;
+  gap: 6px;
+  padding: 2px;
   border: none;
-
+  background: transparent;
   cursor: pointer;
-  padding: 4px 6px;
-
-  font-family: inherit;
 }
 
-
-/* ROUND AVATAR */
-
 .user-avatar {
-  width: 44px;
-  height: 44px;
-
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: #6f4e37;
-  color: #fff;
-
-  font-size: 15px;
+  background: #5b3e2a;
+  color: #ffffff;
+  font-size: 13px;
   font-weight: 700;
-
-  letter-spacing: 0.5px;
-
-  transition: all 0.2s ease;
+  border: 2px solid #5b3e2a;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
-
-
-/* AVATAR HOVER */
 
 .user-avatar-btn:hover .user-avatar {
-  transform: scale(1.05);
-  background: #5b3f2d;
+  background: #3f291c;
+  transform: translateY(-1px);
 }
-
-
-/* ARROW */
 
 .user-arrow {
-  font-size: 9px;
-  color: #6f4e37;
+  color: #5b3e2a;
+  font-size: 8px;
+  font-weight: 700;
 }
 
-
-/* ================================
+/* =========================================================
    USER DROPDOWN
-================================ */
+   ========================================================= */
 
 .user-dropdown {
   position: absolute;
-
-  top: calc(100% + 12px);
-
-  /* DEPLACE LE DROPDOWN PLIS ADWAT */
-  right: -100px;
-
-  width: 250px;
-
-  background: #fffaf4;
-
-  border: 1px solid #e6d8ca;
-  border-radius: 14px;
-
-  box-shadow: 0 12px 35px rgba(63, 43, 29, 0.15);
-
-  padding: 10px;
-
-  z-index: 1000;
-
-  animation: userDropdownAnimation 0.18s ease;
+  top: calc(100% + 9px);
+  right: 0;
+  width: 215px;
+  max-width: calc(100vw - 24px);
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid rgba(91, 62, 42, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(63, 41, 28, 0.15);
+  z-index: 1100;
+  box-sizing: border-box;
 }
 
-
-@keyframes userDropdownAnimation {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-/* ================================
-   DROPDOWN HEADER
-================================ */
+/* Dropdown header */
 
 .user-dropdown-header {
   display: flex;
   align-items: center;
-
-  gap: 12px;
-
-  padding: 10px 8px 12px;
-}
-
-
-/* DROPDOWN AVATAR */
-
-.user-dropdown-avatar {
-  width: 42px;
-  height: 42px;
-
-  min-width: 42px;
-
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #6f4e37;
-  color: white;
-
-  font-size: 14px;
-  font-weight: 700;
-}
-
-
-/* NAME + STATUS */
-
-.user-dropdown-header div:last-child {
-  display: flex;
-  flex-direction: column;
-
-  gap: 3px;
-
+  gap: 8px;
+  padding: 6px;
   min-width: 0;
 }
 
+.user-dropdown-header > div:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 
 .user-dropdown-header strong {
-  color: #3f2b1d;
-
-  font-size: 15px;
+  color: #5b3e2a;
+  font-size: 13px;
   font-weight: 700;
-
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 
 .user-dropdown-header span {
-  color: #4f8a57;
-
-  font-size: 12px;
-  font-weight: 600;
+  margin-top: 1px;
+  color: #7c6a5c;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-
-/* ================================
-   DIVIDER
-================================ */
+.user-dropdown-avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #5b3e2a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
 
 .user-dropdown-divider {
   height: 1px;
-
-  background: #eadfd5;
-
-  margin: 5px 4px;
+  margin: 4px 0;
+  background: rgba(91, 62, 42, 0.10);
 }
 
-
-/* ================================
-   DROPDOWN ITEMS
-================================ */
+/* Dropdown buttons */
 
 .user-dropdown-item,
 .user-dropdown-professional,
 .user-dropdown-logout {
   width: 100%;
-
-  border: none;
-  background: transparent;
-
-  text-align: left;
-
-  padding: 11px 10px;
-
-  border-radius: 9px;
-
-  font-family: inherit;
-
-  font-size: 14px;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-
-  display: block;
-
-  text-decoration: none;
-
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 6px 9px;
+  border-radius: 6px;
   box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease,
+              color 0.2s ease;
 }
-
-
-/* MON PROFIL + PARAMETRES */
 
 .user-dropdown-item {
-  color: #4a3628;
+  border: none;
+  background: transparent;
+  color: #5b3e2a;
 }
-
 
 .user-dropdown-item:hover {
-  background: #f1e6da;
+  background: #f7f1e7;
+  color: #3f291c;
 }
-
-
-/* ================================
-   ENSKRI KOM PWOFESYONEL
-================================ */
 
 .user-dropdown-professional {
-  color: #6f4e37;
-
+  background: #f7f1e7;
+  color: #5b3e2a;
   font-weight: 700;
-
-  margin-top: 3px;
 }
-
 
 .user-dropdown-professional:hover {
-  background: #f1e6da;
-
-  color: #4f3524;
+  background: #eadfce;
+  color: #3f291c;
 }
-
-
-/* ================================
-   LOGOUT
-================================ */
 
 .user-dropdown-logout {
-  color: #b44a3c;
-
-  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #8a3324;
 }
 
-
 .user-dropdown-logout:hover {
-  background: #f8e7e3;
+  background: #f8e9e5;
+  color: #762719;
+}
+
+/* =========================================================
+   MOBILE BUTTON
+   ========================================================= */
+
+.mobile-menu-btn {
+  display: none;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(91, 62, 42, 0.25);
+  border-radius: 8px;
+  background: transparent;
+  color: #5b3e2a;
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #5b3e2a;
+  color: #ffffff;
+}
+
+/* =========================================================
+   MOBILE MENU BASE
+   ========================================================= */
+
+.mobile-menu {
+  display: none;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) and (min-width: 769px) {
+
+  .navbar-container {
+    height: 68px;
+    padding: 0 18px;
+    gap: 14px;
+  }
+
+  .site-logo {
+    width: 165px;
+  }
+
+  .nav-links {
+    gap: 15px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .login-btn,
+  .register-btn {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .user-dropdown {
+    width: 205px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .navbar-container {
+    height: 66px;
+    padding: 0 14px;
+  }
+
+  .logo {
+    height: 52px;
+  }
+
+  .site-logo {
+    width: 165px;
+    max-height: 50px;
+  }
+
+  .nav-links,
+  .nav-actions {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .mobile-menu {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 8px 14px 12px;
+    background: #f7f1e7;
+    border-top: 1px solid rgba(91, 62, 42, 0.08);
+    border-bottom: 1px solid rgba(91, 62, 42, 0.12);
+    box-sizing: border-box;
+  }
+
+  .mobile-menu.active {
+    display: flex;
+  }
+
+  /* Mobile links */
+
+  .mobile-menu > a {
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 8px 9px;
+    border-radius: 7px;
+    color: #5b3e2a;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    box-sizing: border-box;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .mobile-menu > a:hover {
+    background: rgba(91, 62, 42, 0.08);
+    color: #3f291c;
+  }
+
+  /* Mobile user */
+
+  .mobile-user-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  .mobile-user-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 6px 8px;
+  }
+
+  .mobile-user-header > div:last-child {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .mobile-user-header strong {
+    color: #5b3e2a;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mobile-user-header span {
+    margin-top: 1px;
+    color: #7c6a5c;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-menu .user-dropdown-item,
+  .mobile-menu .user-dropdown-professional,
+  .mobile-menu .user-dropdown-logout {
+    width: 100%;
+    min-height: 36px;
+    padding: 7px 9px;
+    font-size: 13px;
+  }
+
+  /* Mobile logged-out buttons */
+
+  .mobile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 7px;
+  }
+
+  .mobile-menu-actions .login-btn,
+  .mobile-menu-actions .register-btn {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* =========================================================
+   SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .navbar-container {
+    height: 62px;
+    padding: 0 12px;
+  }
+
+  .logo {
+    height: 48px;
+  }
+
+  .site-logo {
+    width: 150px;
+    max-height: 46px;
+  }
+
+  .mobile-menu-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .mobile-menu {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .mobile-menu > a {
+    min-height: 37px;
+    font-size: 13px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .navbar-container {
+    padding: 0 10px;
+  }
+
+  .site-logo {
+    width: 140px;
+  }
+
+  .mobile-menu-btn {
+    width: 38px;
+    height: 38px;
+  }
 }

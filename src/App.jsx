@@ -12,6 +12,9 @@ import ProfessionalSetup from "./pages/ProfessionalSetup";
 import IdentityVerification from "./components/IdentityVerification";
 import ProfessionalEdit from "./pages/ProfessionalEdit";
 import DatabaseTest from "./pages/DatabaseTest";
+import Settings from "./pages/Settings";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -86,6 +89,19 @@ function App() {
   path="/professional/:id/edit"
   element={<ProfessionalEdit />}
 />
+
+
+<Route
+  path="/settings"
+  element={<Settings />}
+/>
+
+<Route path="/privacy" element={<Privacy />} />
+
+
+<Route path="/terms" element={<Terms />} />
+
+
       </Routes>
     </BrowserRouter>
   );

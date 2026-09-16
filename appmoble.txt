@@ -1,0 +1,61 @@
+Men yon rapò detaye, klè e pwofesyonèl ou ka kopye dirèkteman nan dokimantasyon pwojè w la (Notion, GitHub, oswa fichye nòt ou):
+
+---
+
+# 📱 Rapò Travay & Devlopman — Pwofesyonèl Lakay Mobile
+
+**Dat:** 11 Septanm 2026
+
+**Pwojè:** ProfesyonelLakayMobile (React Native / Expo / Supabase)
+
+---
+
+### 1. Konfigirasyon & Rezolisyon Pwoblèm Teknik (Environment & Build)
+
+* **Koneksyon Expo Go sou aparèy mobil:** Konfigirasyon rezo lokal (LAN) dirèkteman ant laptop la ak telefòn nan pou teste aplikasyon an an tan reyèl.
+* **Depanaj `@expo/vector-icons` & Kach Metro:** Rezolisyon erè polis FontAwesome ak netwayaj kach (`npx expo start -c`) pou pèmèt koòdone a chaje san erè.
+* **Senkronizasyon Kont Expo:** Rezolisyon konfli kont ant sesyon CLI ak sesyon Expo Go.
+
+---
+
+### 2. Entegrasyon Baz Done & Backend (Supabase)
+
+* **Koneksyon Tab `professionals`:** Konfigirasyon rekèt SQL pou rale done reyèl ki nan baz done a (`name`, `profession`, `location`, `rating`, `image`, `description`, `phone`, `whatsapp`).
+* **Kalkil Dinamik Kategori:** Enplemantasyon kalkil dinamik pou konte kantite pwofesyonèl ki egziste nan baz done a pou chak sèvis ak chak gwo kategori.
+
+---
+
+### 3. Devlopman UI/UX & Fonksyonalite Prensipal (Frontend)
+
+* **Koòdone Grid 2 Kolòn (Bèj & Mawon):** Kreyasyon layout modèn ak kat pwofesyonèl (avatar won, nòt etwal, badj disponiblite, ak bouton aksyon).
+* **Header Pwofesyonèl & Drawer Meni:** Ranplasman senp foto a pa yon header modèn ki gen badj mak `PL`, bouton notifikasyon, ak yon meni tiwa (drawer) pou navigasyon segondè.
+* **Fenèt "Tout Kategori" (Modal):** Enplemantasyon yon ekran konplè ki gen 11 gwo kategori sèvis yo ak sou-sèvis yo, kote itilizatè a ka klike sou nenpòt grenn pou filtre pwofesyonèl yo imedyatman.
+* **Paj Detay Pwofil (Profile Modal):** Kreyasyon yon modal ki ouvri lè yo klike sou *"Gade pwofil"*, ki montre biyografi a ak 2 bouton aksyon natif:
+* **Apèl dirèk:** Konekte ak aplikasyon telefòn lan (`Linking.openURL('tel:...')`).
+* **WhatsApp dirèk:** Louvri yon diskisyon WhatsApp otomatik ak yon mesaj entwodiksyon prepare.
+
+
+
+---
+
+### 4. Navigasyon & Estrikti 4 Onglet Prensipal yo
+
+* **Akèy (Home):** Kategori rapid, rezime pwofesyonèl rekòmande, ak paginasyon kontwole (6 pa 6).
+* **Rechèch (Search):** Koòdone rechèch doub chan (**Metye / Sèvis** ak **Vil / Zòn**) ak rezilta an tan reyèl.
+* **Mesaj (Messages):** Koòdone modèn pou lis konvèsasyon ak pwofesyonèl yo, badj mesaj ki poko li, ak estati sou liy.
+* **Pwofil (Profile):** Ekran jesyon kont itilizatè a, badj verifikasyon, anviwònman sekirite, ak lyen sipò kliyan.
+
+---
+
+### 📌 Pwochen Etap (Next Steps)
+
+1. Mete an plas sistèm otantifikasyon reyèl (Login / Register avèk Supabase Auth).
+2. Konekte modil chat la ak baz done a pou mesaj an tan reyèl (Supabase Realtime).
+3. Pèmèt pwofesyonèl modifye pwofil yo dirèkteman nan app a.
+
+
+4-form inskri kom profesyonel la.
+5-inscri kom kliyan
+6-konekte
+7. mwen vle lem tape gade profile pou detay moun paret tankoou : nom,prenm,adress,profession,sof dosye prive yon nan.
+8- ajoute nan mesaj ki di kont kreye svek succes a, poum di fok li nal konfime nan email li.

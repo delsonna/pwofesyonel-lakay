@@ -1,3 +1,4 @@
+
 /* =========================================
    PROFESSIONALS PAGE
 ========================================= */
@@ -6,6 +7,7 @@
   min-height: 100vh;
   background: #fffaf3;
 }
+
 
 /* =========================================
    PAGE HEADER
@@ -72,6 +74,7 @@
   line-height: 1.7;
 }
 
+
 /* =========================================
    SEARCH AREA
 ========================================= */
@@ -113,7 +116,7 @@
 
   align-items: center;
 
-  gap: 12px;
+  gap: 14px;
 
   border-radius: 9px;
 
@@ -135,111 +138,55 @@
 
   border-radius: 8px;
 
-  font-size: 16px;
-}
-
-.professional-search-field small {
-  display: block;
-
-  margin-bottom: 3px;
-
-  color: #9b8068;
-
-  font-size: 10px;
-
-  font-weight: 700;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.5px;
-}
-
-.professional-search-field p {
-  margin: 0;
-
-  color: #4e3829;
-
-  font-size: 13px;
-
-  font-weight: 600;
-}
-
-.professional-search-btn {
-  min-width: 125px;
-
-  padding: 0 22px;
-
-  border: none;
-
-  border-radius: 9px;
-
-  background: #5a3e2b;
-
-  color: #fffaf3;
-
-  font-size: 13px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: 0.2s ease;
-}
-
-.professional-search-btn:hover {
-  background: #432d20;
-
-  transform: translateY(-1px);
-}
-
-
-
-
-
-/* ================================
-   SEARCH INPUTS
-================================ */
-
-.professional-search-field {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.professional-search-field > span {
   font-size: 22px;
+
   flex-shrink: 0;
 }
 
 .professional-search-field > div {
   display: flex;
+
   flex-direction: column;
+
   gap: 5px;
+
   flex: 1;
 }
 
 .professional-search-field small {
-  font-size: 12px;
-  font-weight: 700;
+  display: block;
+
   color: #8b6f47;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
   text-transform: uppercase;
+
   letter-spacing: 0.5px;
 }
 
 .professional-search-field input {
   width: 100%;
+
   border: none;
   outline: none;
+
   background: transparent;
 
   font-family: inherit;
+
   font-size: 15px;
+
   font-weight: 500;
+
   color: #3d2b1f;
 }
 
 .professional-search-field input::placeholder {
   color: #9a8a7b;
+
   font-weight: 400;
 }
 
@@ -248,21 +195,26 @@
 }
 
 
-/* ================================
+/* =========================================
    SEARCH BUTTON
-================================ */
+========================================= */
 
 .professional-search-btn {
+  min-width: 125px;
+
+  padding: 14px 28px;
+
   border: none;
   outline: none;
 
-  padding: 14px 28px;
   border-radius: 12px;
 
   background: #6f4e37;
+
   color: #fffaf3;
 
   font-size: 15px;
+
   font-weight: 700;
 
   cursor: pointer;
@@ -272,12 +224,13 @@
 
 .professional-search-btn:hover {
   background: #4f3524;
+
   transform: translateY(-2px);
 }
 
 .professional-search-btn:active {
   transform: translateY(0);
-} 
+}
 
 
 /* =========================================
@@ -295,6 +248,11 @@
 
   margin: 0 auto;
 }
+
+
+/* =========================================
+   LIST HEADER
+========================================= */
 
 .professionals-list-header {
   display: flex;
@@ -324,6 +282,11 @@
   font-size: 12px;
 }
 
+
+/* =========================================
+   SORT SELECT
+========================================= */
+
 .sort-select {
   min-width: 165px;
 
@@ -350,6 +313,7 @@
   border-color: #a47a56;
 }
 
+
 /* =========================================
    PROFESSIONAL CARDS GRID
 ========================================= */
@@ -361,6 +325,7 @@
 
   gap: 22px;
 }
+
 
 /* =========================================
    CARD ADJUSTMENTS FOR THIS PAGE
@@ -374,8 +339,157 @@
   height: 210px;
 }
 
+
 /* =========================================
-   RESPONSIVE
+   PAGINATION
+========================================= */
+
+.professionals-pagination {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 48px;
+
+  padding-top: 28px;
+
+  border-top: 1px solid #eadbc8;
+}
+
+.pagination-numbers {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+}
+
+.pagination-number,
+.pagination-arrow {
+  height: 40px;
+
+  border: 1px solid #dfcfbd;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #5a3e2b;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.pagination-number {
+  width: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.pagination-arrow {
+  padding: 0 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+}
+
+.pagination-number:hover:not(.active),
+.pagination-arrow:hover:not(:disabled) {
+  border-color: #b99572;
+
+  background: #faf5ee;
+
+  transform: translateY(-1px);
+}
+
+.pagination-number.active {
+  border-color: #6f4e37;
+
+  background: #6f4e37;
+
+  color: #fffaf3;
+
+  cursor: default;
+}
+
+.pagination-arrow:disabled {
+  opacity: 0.4;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.pagination-info {
+  margin-top: 14px;
+
+  text-align: center;
+
+  color: #947f6b;
+
+  font-size: 11px;
+}
+
+
+/* =========================================
+   NO PROFESSIONALS
+========================================= */
+
+.no-professionals {
+  grid-column: 1 / -1;
+
+  padding: 60px 20px;
+
+  text-align: center;
+
+  border: 1px solid #eadbc8;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.no-professionals h3 {
+  margin: 0 0 8px;
+
+  color: #5a3e2b;
+
+  font-size: 18px;
+}
+
+.no-professionals p {
+  margin: 0;
+
+  color: #947f6b;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   RESPONSIVE — TABLET
 ========================================= */
 
 @media (max-width: 900px) {
@@ -393,7 +507,16 @@
 
     grid-column: 1 / -1;
   }
+
+  .professionals-pagination {
+    gap: 7px;
+  }
 }
+
+
+/* =========================================
+   RESPONSIVE — MOBILE
+========================================= */
 
 @media (max-width: 600px) {
 
@@ -408,6 +531,9 @@
   .professionals-header p {
     font-size: 13px;
   }
+
+
+  /* SEARCH */
 
   .professionals-search {
     padding: 20px 16px;
@@ -425,6 +551,9 @@
     height: 50px;
   }
 
+
+  /* LIST */
+
   .professionals-list-section {
     padding: 40px 16px 65px;
   }
@@ -439,6 +568,9 @@
     width: 100%;
   }
 
+
+  /* GRID */
+
   .professionals-page-grid {
     grid-template-columns: 1fr;
 
@@ -447,5 +579,82 @@
 
   .professionals-page-grid .professional-image {
     height: 220px;
+  }
+
+
+  /* PAGINATION */
+
+  .professionals-pagination {
+    margin-top: 35px;
+
+    padding-top: 22px;
+
+    gap: 5px;
+  }
+
+  .pagination-numbers {
+    gap: 4px;
+  }
+
+  .pagination-number {
+    width: 36px;
+
+    height: 36px;
+  }
+
+  .pagination-arrow {
+    width: 36px;
+
+    height: 36px;
+
+    padding: 0;
+
+    font-size: 0;
+  }
+
+  .pagination-arrow span {
+    display: none;
+  }
+
+  .pagination-arrow:first-child::after {
+    content: "←";
+
+    font-size: 16px;
+  }
+
+  .pagination-arrow:last-child::after {
+    content: "→";
+
+    font-size: 16px;
+  }
+
+  .pagination-info {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL SCREENS
+========================================= */
+
+@media (max-width: 380px) {
+
+  .pagination-number {
+    width: 33px;
+
+    height: 33px;
+
+    font-size: 12px;
+  }
+
+  .pagination-arrow {
+    width: 33px;
+
+    height: 33px;
+  }
+
+  .pagination-numbers {
+    gap: 3px;
   }
 }

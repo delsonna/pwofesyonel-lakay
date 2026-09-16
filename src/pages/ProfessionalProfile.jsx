@@ -689,7 +689,7 @@ const ProfessionalProfile = () => {
 
         {/* REVIEWS */}
 
-        <ReviewSection />
+       <ReviewSection professionalId={professional.id} />
 
       </div>
 

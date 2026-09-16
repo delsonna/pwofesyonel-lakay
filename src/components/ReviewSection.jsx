@@ -1,63 +1,208 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ReviewSection.css";
+import { supabase } from "../lib/supabase";
 
-const ReviewSection = () => {
+const ReviewSection = ({ professionalId }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      name: "Marie L.",
-      rating: 5,
-      comment:
-        "Jean fè travay la trè byen. Li te vini alè epi li te trè pwofesyonèl.",
-      date: "12 Out 2026",
-    },
-    {
-      id: 2,
-      name: "Paul J.",
-      rating: 5,
-      comment:
-        "Bon sèvis, bon kominikasyon e travay la te fèt jan li te pwomèt la.",
-      date: "8 Out 2026",
-    },
-    {
-      id: 3,
-      name: "David M.",
-      rating: 4,
-      comment:
-        "Mwen satisfè ak sèvis la. Mwen ta rekòmande pwofesyonèl sa a.",
-      date: "3 Out 2026",
-    },
-  ]);
+  // =========================================
+  // LOAD REVIEWS
+  // =========================================
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!professionalId) {
+        setLoadingReviews(false);
+        return;
+      }
+
+      try {
+        setLoadingReviews(true);
+        setError("");
+
+        const { data, error: reviewsError } = await supabase
+          .from("reviews")
+          .select("*")
+          .eq("professional_id", professionalId)
+          .order("created_at", { ascending: false });
+
+        if (reviewsError) {
+          console.error("Reviews fetch error:", reviewsError);
+          throw reviewsError;
+        }
+
+        setReviews(data || []);
+      } catch (err) {
+        console.error("Fetch reviews error:", err);
+
+        setError(
+          err?.message ||
+            "Nou pa kapab chaje avis yo kounye a."
+        );
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, [professionalId]);
+
+  // =========================================
+  // SUBMIT REVIEW
+  // =========================================
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (rating === 0 || comment.trim() === "") {
-      alert("Tanpri bay yon nòt epi ekri yon commentaire.");
+    setError("");
+
+    if (!professionalId) {
+      setError(
+        "Nou pa jwenn pwofesyonèl ki resevwa avis sa a."
+      );
       return;
     }
 
-    const newReview = {
-      id: Date.now(),
-      name: "Ou",
-      rating,
-      comment,
-      date: "Jodi a",
-    };
+    if (rating === 0) {
+      setError("Tanpri chwazi yon nòt ant 1 ak 5 zetwal.");
+      return;
+    }
 
-    setReviews([newReview, ...reviews]);
+    if (comment.trim() === "") {
+      setError("Tanpri ekri yon commentaire.");
+      return;
+    }
 
-    setRating(0);
-    setComment("");
+    try {
+      setSubmitting(true);
+
+      // =====================================
+      // GET CURRENT USER
+      // =====================================
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw userError;
+      }
+
+      if (!user) {
+        setError(
+          "Ou dwe konekte pou w ka bay yon avis."
+        );
+        return;
+      }
+
+      // =====================================
+      // INSERT REVIEW
+      // =====================================
+
+      const { data: newReview, error: insertError } =
+        await supabase
+          .from("reviews")
+          .insert({
+            professional_id: Number(professionalId),
+            user_id: user.id,
+            rating: Number(rating),
+            comment: comment.trim(),
+          })
+          .select()
+          .single();
+
+      if (insertError) {
+        console.error(
+          "Review insert error:",
+          insertError
+        );
+
+        throw insertError;
+      }
+
+      console.log(
+        "NEW REVIEW SAVED:",
+        newReview
+      );
+
+      // =====================================
+      // ADD REVIEW TO SCREEN
+      // =====================================
+
+      setReviews((currentReviews) => [
+        newReview,
+        ...currentReviews,
+      ]);
+
+      // =====================================
+      // RESET FORM
+      // =====================================
+
+      setRating(0);
+      setComment("");
+
+      alert("Avis ou a anrejistre avèk siksè! ⭐");
+    } catch (err) {
+      console.error(
+        "Submit review error:",
+        err
+      );
+
+      setError(
+        err?.message ||
+          "Gen yon pwoblèm pandan avis la t ap anrejistre."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
+  // =========================================
+  // CALCULATE AVERAGE
+  // =========================================
+
   const averageRating =
-    reviews.reduce((total, review) => total + review.rating, 0) /
-    reviews.length;
+    reviews.length > 0
+      ? reviews.reduce(
+          (total, review) =>
+            total + Number(review.rating || 0),
+          0
+        ) / reviews.length
+      : 0;
+
+  // =========================================
+  // FORMAT DATE
+  // =========================================
+
+  const formatDate = (date) => {
+    if (!date) {
+      return "";
+    }
+
+    try {
+      return new Date(date).toLocaleDateString(
+        "fr-FR",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }
+      );
+    } catch {
+      return "";
+    }
+  };
+
+  // =========================================
+  // RENDER
+  // =========================================
 
   return (
     <section className="reviews-section">
@@ -78,10 +223,10 @@ const ReviewSection = () => {
             </h2>
 
             <p>
-              Dekouvri eksperyans lòt kliyan ak pwofesyonèl sa a.
+              Dekouvri eksperyans lòt kliyan ak
+              pwofesyonèl sa a.
             </p>
           </div>
-
 
           {/* RATING SUMMARY */}
 
@@ -103,6 +248,13 @@ const ReviewSection = () => {
 
         </div>
 
+        {/* ERROR */}
+
+        {error && (
+          <div className="setup-error">
+            {error}
+          </div>
+        )}
 
         {/* WRITE REVIEW */}
 
@@ -113,9 +265,9 @@ const ReviewSection = () => {
           </h3>
 
           <p>
-            Bay pwofesyonèl sa a yon nòt epi pataje eksperyans ou.
+            Bay pwofesyonèl sa a yon nòt epi
+            pataje eksperyans ou.
           </p>
-
 
           <form onSubmit={handleSubmit}>
 
@@ -139,8 +291,11 @@ const ReviewSection = () => {
                         ? "star-button active"
                         : "star-button"
                     }
-                    onClick={() => setRating(star)}
+                    onClick={() =>
+                      setRating(star)
+                    }
                     aria-label={`${star} zetwal`}
+                    disabled={submitting}
                   >
                     ★
                   </button>
@@ -151,76 +306,100 @@ const ReviewSection = () => {
 
             </div>
 
-
             {/* COMMENT */}
 
             <textarea
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) =>
+                setComment(e.target.value)
+              }
               placeholder="Ekri commentaire ou sou sèvis la..."
               rows="4"
+              disabled={submitting}
             />
-
 
             <button
               type="submit"
               className="submit-review"
+              disabled={submitting}
             >
-              Soumèt avis
+              {submitting
+                ? "Ap anrejistre..."
+                : "Soumèt avis"}
             </button>
 
           </form>
 
         </div>
 
-
         {/* REVIEWS LIST */}
 
         <div className="reviews-list">
 
-          {reviews.map((review) => (
+          {loadingReviews ? (
 
-            <article
-              className="review-card"
-              key={review.id}
-            >
+            <p>
+              Ap chaje avis yo...
+            </p>
 
-              <div className="review-top">
+          ) : reviews.length === 0 ? (
 
-                <div className="review-user">
+            <p>
+              Pwofesyonèl sa a poko resevwa okenn avis.
+            </p>
 
-                  <div className="review-avatar">
-                    {review.name.charAt(0)}
+          ) : (
+
+            reviews.map((review) => (
+
+              <article
+                className="review-card"
+                key={review.id}
+              >
+
+                <div className="review-top">
+
+                  <div className="review-user">
+
+                    <div className="review-avatar">
+                      U
+                    </div>
+
+                    <div>
+                      <h4>
+                        Kliyan
+                      </h4>
+
+                      <span>
+                        {formatDate(
+                          review.created_at
+                        )}
+                      </span>
+                    </div>
+
                   </div>
 
-                  <div>
-                    <h4>
-                      {review.name}
-                    </h4>
+                  <div className="review-stars">
+                    {"★".repeat(
+                      Number(review.rating)
+                    )}
 
-                    <span>
-                      {review.date}
-                    </span>
+                    {"☆".repeat(
+                      5 - Number(review.rating)
+                    )}
                   </div>
 
                 </div>
 
+                <p className="review-comment">
+                  {review.comment}
+                </p>
 
-                <div className="review-stars">
-                  {"★".repeat(review.rating)}
-                  {"☆".repeat(5 - review.rating)}
-                </div>
+              </article>
 
-              </div>
+            ))
 
-
-              <p className="review-comment">
-                {review.comment}
-              </p>
-
-            </article>
-
-          ))}
+          )}
 
         </div>
 

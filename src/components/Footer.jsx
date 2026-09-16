@@ -1,90 +1,144 @@
 
+import { Link } from "react-router-dom";
 import "./Footer.css";
+
 const Footer = () => {
   return (
     <footer className="footer">
 
       <div className="footer-container">
 
-        {/* BRAND */}
+        {/* ================= BRAND ================= */}
         <div className="footer-brand">
 
-          <div className="footer-logo">
-            <span className="footer-logo-icon">PL</span>
+          <Link to="/" className="footer-logo">
+            <span className="footer-logo-mark">PL</span>
 
-            <span>
+            <span className="footer-logo-name">
               Pwofesyonèl <strong>Lakay</strong>
             </span>
-          </div>
+          </Link>
 
-          <p>
+          <p className="footer-description">
             Konekte ak pwofesyonèl serye toupre ou,
             rapidman ak fasilite.
           </p>
 
           <div className="footer-socials">
-            <a href="#">f</a>
-            <a href="#">in</a>
-            <a href="#">ig</a>
-            <a href="#">x</a>
+
+            <a href="#" aria-label="Facebook">
+              f
+            </a>
+
+            <a href="#" aria-label="LinkedIn">
+              in
+            </a>
+
+            <a href="#" aria-label="Instagram">
+              ig
+            </a>
+
+            <a href="#" aria-label="X">
+              𝕏
+            </a>
+
           </div>
 
         </div>
 
 
-        {/* LINKS */}
+        {/* ================= EXPLORE ================= */}
         <div className="footer-column">
 
           <h3>Eksplore</h3>
 
-          <a href="#">Akèy</a>
-          <a href="#">Pwofesyonèl</a>
-          <a href="#">Kategori</a>
-          <a href="#">Kijan li mache</a>
+          <Link to="/">
+            Akèy
+          </Link>
+
+          <Link to="/professionals">
+            Pwofesyonèl
+          </Link>
+
+          <Link to="/categories">
+            Kategori
+          </Link>
+
+          <Link to="/about">
+            Sou nou
+          </Link>
 
         </div>
 
 
-        {/* SERVICES */}
+        {/* ================= SERVICES ================= */}
         <div className="footer-column">
 
-          <h3>Sèvis</h3>
+          <h3>Sèvis popilè</h3>
 
-          <a href="#">Plonbye</a>
-          <a href="#">Elektrisyen</a>
-          <a href="#">Mekanisyen</a>
-          <a href="#">Pent</a>
+          <Link to="/professionals?service=Plonbye">
+            Plonbye
+          </Link>
+
+          <Link to="/professionals?service=Elektrisyen">
+            Elektrisyen
+          </Link>
+
+          <Link to="/professionals?service=Mekanisyen">
+            Mekanisyen
+          </Link>
+
+          <Link to="/professionals?service=Pent">
+            Pent
+          </Link>
 
         </div>
 
 
-        {/* CONTACT */}
-        <div className="footer-column">
+        {/* ================= CONTACT ================= */}
+        <div className="footer-column footer-contact">
 
           <h3>Kontakte nou</h3>
 
-          <p>📍 Port-au-Prince, Haïti</p>
+          <div className="contact-item">
+            <span className="contact-symbol">⌖</span>
+            <span>Port-au-Prince, Haïti</span>
+          </div>
 
-          <p>📞 +509 0000-0000</p>
+          <div className="contact-item">
+            <span className="contact-symbol">◉</span>
+            <span>+509 4041-0034</span>
+          </div>
 
-          <p>✉️ contact@professionnellakay.com</p>
+          <div className="contact-item">
+            <span className="contact-symbol">@</span>
+            <span>delsonnasony7@gmail.com</span>
+          </div>
 
         </div>
 
       </div>
 
 
-      {/* BOTTOM */}
-
+      {/* ================= BOTTOM ================= */}
       <div className="footer-bottom">
 
         <p>
           © 2026 Pwofesyonèl Lakay. Tout dwa rezève.
         </p>
 
-        <div>
-          <a href="#">Konfidansyalite</a>
-          <a href="#">Kondisyon</a>
+        <div className="footer-legal">
+
+          <Link to="/privacy">
+            Konfidansyalite
+          </Link>
+
+          <span className="footer-divider">•</span>
+
+          <Link to="/terms">
+            Kondisyon
+          </Link>
+
         </div>
 
       </div>
