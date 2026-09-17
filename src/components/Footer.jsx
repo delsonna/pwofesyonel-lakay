@@ -107,12 +107,12 @@ const Footer = () => {
 
           <div className="contact-item">
             <span className="contact-symbol">◉</span>
-            <span>+509 4041-0034</span>
+            <span>+509 4041-0034/+18098809297</span>
           </div>
 
           <div className="contact-item">
             <span className="contact-symbol">@</span>
-            <span>delsonnasony7@gmail.com</span>
+            <span>Profesyonellakay@gmail.com</span>
           </div>
 
         </div>

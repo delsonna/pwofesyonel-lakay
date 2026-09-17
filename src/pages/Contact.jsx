@@ -273,7 +273,7 @@ const Contact = () => {
 
                 <div>
                   <small>Telefòn</small>
-                  <h3>+509 0000-0000</h3>
+                  <h3>+509 4041-0034/+18098809297</h3>
                 </div>
               </div>
 
@@ -283,7 +283,7 @@ const Contact = () => {
                 <div>
                   <small>Email</small>
                   <h3>
-                    contact@professionnellakay.com
+                    Profesyonellakay@gmail.com
                   </h3>
                 </div>
               </div>

@@ -1,0 +1,92 @@
+Rechèch avanse ak Kat Jeolokasyon (Map):
+
+Olye se sèlman yon lis tèks, nou ka ajoute yon kat jeyografik (lè l sèvi avèk react-native-maps) pou kliyan yo wè ki plonbye oswa elektrisyen ki pi pre zòn yo a an dirèk.
+
+Pataje Pwofil (Share Profile):
+
+Mete yon bouton "Pataje" nan pwofil chak pwofesyonèl pou itilizatè yo ka voye lyen an bay zanmi yo sou WhatsApp, Facebook, oswa lòt rezo sosyal fasilman.
+
+Filtè pa Nòt (Zetwal):
+
+Nan ekran rechèch la, nou ka pèmèt itilizatè yo filtre pwofesyonèl yo pou wè sèlman sa ki gen 4 zetwal anwo yo, oswa sa ki pi popilè yo.
+
+Konfimasyon Bookings / Randevou:
+
+Ajoute yon ti kalandriye oswa yon bouton " pran randevou" kote kliyan an ka chwazi yon dat ak lè pou l mande sèvis yon pwofesyonèl.
+
+
+
+
+
+travay a faire:
+
+
+
+Se yon vrèman bon lide! Pou pèmèt pwofesyonèl yo afiche foto travay yo (sa yo rele Portfolio oswa galri foto reyalizasyon yo) sou aplikasyon Pwofesyonèl Lakay la, men kijan nou ta ka jere sa nan yon fason ki pwòp epi efikas anpil:
+
+1. Nan nivo Baz Done Supabase la:
+Nou ta kreye yon nouvo tab ki rele professional_portfolio (oswa ajoute yon kolòn portfolio_images ki aksepte yon lis lyen foto/array of strings nan tab professionals la). Tab sa a ta gen:
+
+id (Inik)
+
+professional_id (Ki konekte ak pwofesyonèl la)
+
+image_url (Lyen foto travay la ki sove nan Supabase Storage)
+
+title oswa description (Ti deskripsyon sou travay la, pa egzanp: "Enstalasyon yon panèl solè nan Petyonvil")
+
+2. Nan nivo Fòmilè Enskripsyon an (oswa nan pwofil li):
+Nou ta ajoute yon nouvèl etap oswa yon seksyon nan fòmilè a ki rele "Galri Travay Mwen yo", kote pwofesyonèl la ka klike pou chwazi plizyè foto nan galri telefòn li oswa pran foto travay li yo ak kamera a pou voye yo moute (Upload) nan baz done a.
+
+3. Kijan pou afiche l nan App a:
+Nan Modal Detay Pwofil la (Gade pwofil): Anplis biografi ak avis yo, nou ka mete yon bèl karousèl oswa yon gri foto orizontal (horizontal scroll) kote kliyan yo ka wè eklatman sou foto travay pwofesyonèl la te deja fè yo anvan yo pran desizyon pou kontakte l.
+
+Nan Pwofil Mwen an: Pwofesyonèl la ta gen yon bouton "Ajoute nouvo foto travay" pou l ka anrichi galri l chak lè li fè yon nouvo travay.
+
+Èske ou ta renmen m montre w kijan pou nou ajoute tab sa a ak kòd ki koresponn avè l nan pwojè w la?
+
+
+
+
+
+
+baz done pou mesaj.
+
+
+
+
+Pou mete oswa chanje ikon aplikasyon an nan app.json ou a, ou jis bezwen ajoute oswa verifye pwopriyete icon nan nivo objè expo a, an kowòdinasyon ak kote imaj ikon ou an ye nan pwojè w la (pa egzanp nan katab assets la).
+
+Men egzanp kijan l dwe ye nan fichye app.json ou a:
+
+JSON
+{
+  "expo": {
+    "name": "Pwofesyonèl Lakay",
+    "slug": "ProfesyonelLakayMobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.delsonna.profesyonellakay"
+    }
+  }
+}
+Ti konsèy:
+Asire w ke w gen yon imaj (fòma PNG rekòmande, de preferans 1024x1024 piksèl) ki rele icon.png anndan katab assets ou a.
+
+Chemen an (./assets/icon.png) dwe koresponn egzakteman ak kote fichye a ye nan pwojè w la.
+
+Èske tout bagay kòrèk ak app.json ou an kounye a pou nou ka relanse build la?
+
+
+
+
+
+supabse mode pass google: ouab xnif ibvd xwt

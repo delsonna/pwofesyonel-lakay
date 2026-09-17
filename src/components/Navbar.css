@@ -11,40 +11,69 @@
   top: 0;
   z-index: 1000;
 }
-
 .navbar-container {
   width: 100%;
-  max-width: 1200px;
-  height: 72px;
+  max-width: 1400px; /* <--- Ogmante lajè sa a pou ba l plis espas pou logo a elaji */
+  height: 94px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 24px 0 0; 
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   box-sizing: border-box;
+
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 92px; /* Ogmante wotè logo a */
+  flex-shrink: 0;
+  text-decoration: none;
+  background: transparent;
+  margin-right: auto; 
+  margin-left: 0px; 
+  padding-left: 0px;
+}
+
+.site-logo {
+  display: block;
+  width: 340px; /* <--- Ogmante lajè logo a a 340px oswa 360px kounye a paske bar la vin pi laj */
+  max-height: 90px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  mix-blend-mode: multiply; 
+  border: none;
+  outline: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 /* =========================================================
-   LOGO
+   LOGO (EKSTRÈM GÒCH AK PI GWO ZOOME)
    ========================================================= */
 
 .logo {
   display: flex;
   align-items: center;
-  height: 58px;
+  height: 84px;
   flex-shrink: 0;
   text-decoration: none;
   background: transparent;
+  margin-right: auto; 
+  margin-left: 0px; /* Kole l nèt ak kwen gòch ekran an */
+  padding-left: 0px;
 }
 
 .site-logo {
   display: block;
-  width: 185px;
-  max-height: 56px;
+  width: 270px; /* Ogmante gwosè a pou l vin pi gwo (zoome) epi tèks la byen vizib */
+  max-height: 82px;
   height: auto;
   object-fit: contain;
   background: transparent;
+  mix-blend-mode: multiply; /* Konfonn fond la ak koulè sit la */
   border: none;
   outline: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -112,6 +141,7 @@
   justify-content: flex-end;
   gap: 8px;
   flex-shrink: 0;
+  padding-right: 12px; /* Kenbe yon ti espas sou kwen dwat la */
 }
 
 .login-btn,
@@ -371,13 +401,12 @@
 @media (max-width: 1024px) and (min-width: 769px) {
 
   .navbar-container {
-    height: 68px;
-    padding: 0 18px;
-    gap: 14px;
+    height: 80px;
+    padding: 0 16px 0 0;
   }
 
   .site-logo {
-    width: 165px;
+    width: 230px;
   }
 
   .nav-links {
@@ -390,6 +419,7 @@
 
   .nav-actions {
     gap: 6px;
+    padding-right: 0;
   }
 
   .login-btn,
@@ -416,17 +446,18 @@
 @media (max-width: 768px) {
 
   .navbar-container {
-    height: 66px;
-    padding: 0 14px;
+    height: 72px;
+    padding: 0 12px 0 0;
   }
 
   .logo {
-    height: 52px;
+    height: 66px;
+    margin-left: 0;
   }
 
   .site-logo {
-    width: 165px;
-    max-height: 50px;
+    width: 210px;
+    max-height: 64px;
   }
 
   .nav-links,
@@ -546,17 +577,17 @@
 @media (max-width: 480px) {
 
   .navbar-container {
-    height: 62px;
-    padding: 0 12px;
+    height: 66px;
+    padding: 0 10px 0 0;
   }
 
   .logo {
-    height: 48px;
+    height: 58px;
   }
 
   .site-logo {
-    width: 150px;
-    max-height: 46px;
+    width: 180px;
+    max-height: 56px;
   }
 
   .mobile-menu-btn {
@@ -583,11 +614,11 @@
 @media (max-width: 360px) {
 
   .navbar-container {
-    padding: 0 10px;
+    padding: 0 8px 0 0;
   }
 
   .site-logo {
-    width: 140px;
+    width: 160px;
   }
 
   .mobile-menu-btn {
